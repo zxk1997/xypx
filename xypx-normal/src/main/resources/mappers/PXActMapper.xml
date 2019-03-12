@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.normal.DAO.PXActMapper" >
+<sql id="myTimefilter">
+	<if test="timefilter != null">
+		<if test="timefilter == 1">and e >= #{time}</if>
+		<if test="timefilter == 2">and e &lt; #{time}</if>
+	</if>
+</sql>
+<!-- ==============查询开始============== -->
+
+
+
+<select id="findActHost" resultType="java.lang.String">
+	SELECT uid FROM px_act WHERE id=#{id}
+</select>
+
+<select id="findLctrHost" resultType="java.lang.String">
+	SELECT uid FROM px_lctr WHERE id=#{id}
+</select>
+
+<select id="getActRM" resultType="java.lang.String">
+	SELECT rm FROM px_act WHERE id=#{id}
+</select>
+
+<select id="getLctrRM" resultType="java.lang.String">
+	SELECT rm FROM px_lctr WHERE id=#{id}
+</select>
+
+<sql id="sql_getTgas">
+	<foreach collection="array" item="item"  separator="," >
+				#{item}       
+	</foreach>
+</sql>
+<!-- 标签推荐 -->
+<select id="findActFromTagREC" resultType="com.normal.Model.PXActInfoToSearch">
+	SELECT px_act.id,px_act.placard,px_act.title,px_act.s as 'st',px_act.e as 'et',px_act.summary,px_user.icon,px_user.nickname,px_act.time,0 as 'act_type',count(px_act_tag.id) as 'q'
+	FROM px_act
+	inner join px_user on px_act.uid=px_user.id
+    inner join px_act_tag on px_act_tag.aid=px_act.id
+	where px_act.status=1 and px_act.pe>now() and px_act_tag.t=1 and px_act_tag.tid in (<include refid="sql_getTgas" />)
+    group by px_act.id
+	union
+	SELECT px_lctr.id,px_lctr.placard,px_lctr.title,px_lctr.s as 'st',px_lctr.e as 'et',px_lctr.summary,px_user.icon,px_user.nickname,px_lctr.time,1 as 'act_type',count(px_act_tag.id) as 'q'
+	FROM px_lctr
+	inner join px_user on px_lctr.uid=px_user.id
+    inner join px_act_tag on px_act_tag.aid=px_lctr.id
+	where px_lctr.status=1 and px_lctr.pe>now() and px_act_tag.t=1 and px_act_tag.tid in (<include refid="sql_getTgas" />)
+    group by px_lctr.id
+	
+   order by q desc
+   LIMIT 0,12
+</select>
+
+
+<!-- 首页推荐 -->
+<select id="findActFromREC" resultType="com.normal.Model.PXActInfoToSearch">
+	SELECT px_act.id,px_act.placard,px_act.title,px_act.s as 'st',px_act.e as 'et',px_act.summary,px_user.icon,px_user.nickname,px_act.time,0 as 'act_type'
+	FROM px_act
+	inner join px_user on px_act.uid=px_user.id
+	inner join px_act_rec on px_act_rec.aid=px_act.id
+	where px_act.status=1
+	union
+	SELECT px_lctr.id,px_lctr.placard,px_lctr.title,px_lctr.s as 'st',px_lctr.e as 'et',px_lctr.summary,px_user.icon,px_user.nickname,px_lctr.time,1 as 'act_type'
+	FROM px_lctr
+	inner join px_user on px_lctr.uid=px_user.id
+	inner join px_act_rec on px_act_rec.aid=px_lctr.id
+	where px_lctr.status=1
+</select>
+
+<!-- 搜索功能 -->
+<select id="findActFromSearch" resultType="com.normal.Model.PXActInfoToSearch">
+	<trim prefixOverrides="UNION">
+		<if test="act_type == null or act_type ==0 or act_type ==1">	<!-- 活动查询 -->
+			UNION SELECT px_act.id,px_act.placard,px_act.title,px_act.s as 'st',px_act.e as 'et',px_act.summary,px_user.icon,px_user.nickname,px_act.time,0 as 'act_type'
+			FROM px_act
+			inner join px_user on px_act.uid=px_user.id
+			where px_act.status=1
+			<if test="tags1 != null">
+				and exists (select px_act_tag.id from px_act_tag where t=0 and tid in(
+				<foreach collection="tags1" item="item"  separator="," >#{item} </foreach>
+				) and px_act.id=px_act_tag.aid)
+			</if>
+			<if test="tags2 != null">
+				and exists (select px_act_tag.id from px_act_tag where t=1 and tid in(
+				<foreach collection="tags2" item="item"  separator="," >#{item} </foreach>
+				) and px_act.id=px_act_tag.aid)
+			</if>
+			<if test="str != null">and px_act.title like CONCAT('%',#{str},'%' )</if>
+			<if test="starttime != null" >and px_act.s>=#{starttime} and px_act.s&lt;=#{endtime}</if>
+		</if>
+		
+		<if test="act_type == null or act_type ==0 or act_type ==2"><!-- 讲座查询 -->
+			UNION SELECT px_lctr.id,px_lctr.placard,px_lctr.title,px_lctr.s as 'st',px_lctr.e as 'et',px_lctr.summary,px_user.icon,px_user.nickname,px_lctr.time,1 as 'act_type'
+			FROM px_lctr
+			inner join px_user on px_lctr.uid=px_user.id
+			where px_lctr.status=1
+			<if test="tags1 != null">
+				and exists (select px_act_tag.id from px_act_tag where t=0 and tid in(
+				<foreach collection="tags1" item="item"  separator="," >#{item} </foreach>
+				) and px_lctr.id=px_act_tag.aid)
+			</if>
+			<if test="tags2 != null">
+				and exists (select px_act_tag.id from px_act_tag where t=1 and tid in(
+				<foreach collection="tags2" item="item"  separator="," >#{item} </foreach>
+				) and px_lctr.id=px_act_tag.aid)
+			</if>
+			<if test="str != null">and px_lctr.title like CONCAT('%',#{str},'%' )</if>
+			<if test="starttime != null" >and px_lctr.s>=#{starttime} and px_lctr.s&lt;=#{endtime}</if>
+			<if test="lb != null">and px_lctr.lb=#{lb}</if>
+		</if>	
+	</trim>
+	
+	order by time desc
+	<if test="start != null">LIMIT #{start},#{length}</if>
+</select>
+
+<select id="getActFromSearchCnt" resultType="java.lang.Integer">
+	SELECT 
+		<trim  prefixOverrides="+">
+			<if test="(act_type == null or act_type ==0 or act_type ==1)">+a.cnt</if>
+			<if test="(act_type == null or act_type ==0 or act_type ==2)">+b.cnt</if>
+		</trim>
+	FROM
+		<trim prefixOverrides=",">
+			<if test="(act_type == null or act_type ==0 or act_type ==1)">
+				,(	SELECT count(px_act.id) as 'cnt'
+					FROM px_act
+					inner join px_user on px_act.uid=px_user.id
+					where px_act.status=1
+					<if test="tags1 != null">
+						and exists (select px_act_tag.id from px_act_tag where t=0 and tid in(
+						<foreach collection="tags1" item="item"  separator="," >#{item} </foreach>
+						) and px_act.id=px_act_tag.aid)
+					</if>
+					<if test="tags2 != null">
+						and exists (select px_act_tag.id from px_act_tag where t=1 and tid in(
+						<foreach collection="tags2" item="item"  separator="," >#{item} </foreach>
+						) and px_act.id=px_act_tag.aid)
+					</if>
+					<if test="str != null">and px_act.title like CONCAT('%',#{str},'%' )</if>
+					<if test="starttime != null" >and px_act.s>=#{starttime} and px_act.s&lt;=#{endtime}</if>
+				) a
+			</if>
+			<if test="act_type == null or act_type ==0 or act_type ==2">
+				,(	SELECT count(px_lctr.id) as 'cnt'
+					FROM px_lctr
+					inner join px_user on px_lctr.uid=px_user.id
+					where px_lctr.status=1
+					<if test="tags1 != null">
+						and exists (select px_act_tag.id from px_act_tag where t=0 and tid in(
+						<foreach collection="tags1" item="item"  separator="," >#{item} </foreach>
+						) and px_lctr.id=px_act_tag.aid)
+					</if>
+					<if test="tags2 != null">
+						and exists (select px_act_tag.id from px_act_tag where t=1 and tid in(
+						<foreach collection="tags2" item="item"  separator="," >#{item} </foreach>
+						) and px_lctr.id=px_act_tag.aid)
+					</if>
+					<if test="str != null">and px_lctr.title like CONCAT('%',#{str},'%' )</if>
+					<if test="starttime != null" >and px_lctr.s>=#{starttime} and px_lctr.s&lt;=#{endtime}</if>
+					<if test="lb != null">and px_lctr.lb=#{lb}</if>
+				) b
+			</if>
+		</trim>
+	
+</select>
+
+<select id="findActByID" resultType="com.normal.Model.PXActDetails">
+	<!-- SELECT id, uid, rm,  status, time, content, summary AS 'describe', plimit, placard, pe, ps, e, phone, s, address, title FROM px_act 
+	WHERE id = #{id}-->
+	SELECT px_act.id, px_user.nickname ,px_user.icon,px_user.u as 'ua',px_act.status,content, summary AS 'describe', plimit, placard, pe, ps, e, px_act.phone, s, address, title,count(px_user_partake.id)as 'joincnt' FROM px_act
+	inner join px_user on px_user.id=px_act.uid
+	left join px_user_partake on px_user_partake.aid=px_act.id
+	WHERE px_act.id =#{id}
+	<if test="uid != null">and (px_act.status=1 or px_act.uid=#{uid})</if>
+</select>
+
+<select id="findLctrByID" resultType="com.normal.Model.PXLctrDetails">
+	<!-- 
+	SELECT id, uid, rm,  status, time, content, summary AS 'describe', plimit, placard, pe, ps, e, phone, s, address, title,lb FROM px_lctr 
+	WHERE id = #{id} -->
+	SELECT px_lctr.id, px_user.nickname ,px_user.icon ,px_user.u as 'ua',px_lctr.status,content, summary AS 'describe', plimit, placard, pe, ps, e, px_lctr.phone, s, address, title,count(px_user_partake.id)as 'joincnt',lb FROM px_lctr
+	inner join px_user on px_user.id=px_lctr.uid
+	left join px_user_partake on px_user_partake.aid=px_lctr.id
+	WHERE px_lctr.id =#{id}
+	<if test="uid != null">and (px_lctr.status=1 or px_lctr.uid=#{uid})</if>
+</select>
+
+<select id="getActPlimit" resultType="java.lang.Integer">
+	<if test="type == 0">
+		SELECT plimit FROM px_act WHERE id=#{id}
+	</if>
+	<if test="type == 1">
+		SELECT plimit FROM px_lctr WHERE id=#{id}
+	</if>
+</select>
+
+<!-- 获取关于自己的活动/讲座 -->
+<select id="findSelfAct" resultType="com.normal.Model.PXSelfAct" parameterType="map">
+	  	<trim prefixOverrides="UNION">
+		  	<if test="(act_type == 0 || act_type == 1) and (type == 0 || type ==1)">
+		  		<!-- 我发布的活动 -->
+			  	UNION SELECT px_act.id, title as 'name', address, s as 'starttime', placard, px_act.status,px_user.nickname as 'host',0 as 'acttype',0 as 'type',px_act.time FROM px_act
+				inner join px_user on px_user.id=px_act.uid
+				where px_act.uid=#{id} and px_act.status != -999
+				<include refid="myTimefilter"/>
+		  	</if> 
+		  	<if test="(act_type == 0 || act_type == 1) and (type == 0 || type ==2)">
+		  		<!-- 我参加的活动 -->
+			  	UNION SELECT px_act.id, title as 'name', address, s as 'starttime', placard, px_act.status,px_user.nickname as 'host',0 as 'acttype',1 as 'type', px_user_partake.time FROM px_act
+				inner join px_user on px_user.id=px_act.uid
+				inner join px_user_partake on px_user_partake.aid=px_act.id
+				where px_user_partake.uid=#{id} and px_user_partake.at=0
+				<include refid="myTimefilter"/>
+		  	</if>
+		  	<if test="(act_type == 0 || act_type == 2) and (type == 0 || type ==1)">
+		  		<!-- 我发布的讲座 -->
+			  	UNION SELECT px_lctr.id, title as 'name', address, s as 'starttime', placard, px_lctr.status,px_user.nickname as 'host',1 as 'acttype',0 as 'type',px_lctr.time FROM px_lctr
+				inner join px_user on px_user.id=px_lctr.uid
+				where px_lctr.uid=#{id} and px_lctr.status != -999
+				<include refid="myTimefilter"/>
+		  	</if>	
+		  	<if test="(act_type == 0 || act_type == 2) and (type == 0 || type ==2)">
+		  		<!-- 我参加的讲座 -->
+			  	UNION SELECT px_lctr.id, title as 'name', address, s as 'starttime', placard, px_lctr.status,px_user.nickname as 'host',0 as 'acttype',1 as 'type', px_user_partake.time  FROM px_lctr
+				inner join px_user on px_user.id=px_lctr.uid
+				inner join px_user_partake on px_user_partake.aid=px_lctr.id
+				where px_user_partake.uid=#{id} and px_user_partake.at=1
+				<include refid="myTimefilter"/>
+		  	</if>
+		  	order by time desc
+	  	</trim>
+		<if test="start != null">LIMIT #{start},#{length}</if>
+</select>
+
+  	<!-- 获取有关自己的活动总数 -->
+<select id="getSelfActCnt"  resultType="java.lang.Integer">
+  	SELECT 
+		<trim  prefixOverrides="+">
+			<if test="(act_type == 0 || act_type == 1) and (type == 0 || type ==1)">+a.cnt</if>
+			<if test="(act_type == 0 || act_type == 1) and (type == 0 || type ==2)">+b.cnt</if>
+			<if test="(act_type == 0 || act_type == 2) and (type == 0 || type ==1)">+c.cnt</if>
+			<if test="(act_type == 0 || act_type == 2) and (type == 0 || type ==2)">+d.cnt</if>
+		</trim>
+	FROM
+		<trim prefixOverrides=",">
+			<if test="(act_type == 0 || act_type == 1) and (type == 0 || type ==1)">
+				,(SELECT count(px_act.id) as "cnt"
+				FROM px_act 
+				inner join px_user on px_user.id=px_act.uid
+				where px_act.uid=#{id} and px_act.status != -999
+				<include refid="myTimefilter"/>
+				) a
+			</if>
+			<if test="(act_type == 0 || act_type == 1) and (type == 0 || type ==2)">
+				,(SELECT count(px_act.id) as "cnt"
+				from px_act 
+				inner join px_user on px_user.id=px_act.uid
+				inner join px_user_partake on px_user_partake.aid=px_act.id
+				where px_user_partake.uid=#{id} and px_user_partake.at=0
+				<include refid="myTimefilter"/>
+				) b
+			</if>
+			<if test="(act_type == 0 || act_type == 2) and (type == 0 || type ==1)">
+				,(SELECT COUNT(px_lctr.id) as "cnt"
+				from px_lctr
+				inner join px_user on px_user.id=px_lctr.uid
+				where px_lctr.uid=#{id} and px_lctr.status != -999
+				<include refid="myTimefilter"/>
+				) c
+			</if>	
+			<if test="(act_type == 0 || act_type == 2) and (type == 0 || type ==2)">
+				,(SELECT COUNT(px_lctr.id) as "cnt"
+				from px_lctr
+				inner join px_user on px_user.id=px_lctr.uid
+				inner join px_user_partake on px_user_partake.aid=px_lctr.id
+				where px_user_partake.uid=#{id} and px_user_partake.at=1
+				<include refid="myTimefilter"/>
+				) d
+			</if>			
+		</trim>
+</select>
+
+
+<!-- ==============更新开始============== -->
+
+<!-- 更新活动 -->
+<update id="updateAct">
+	UPDATE px_act SET  title=#{title}, address=#{address}, phone=#{phone}, s=#{s}, e=#{e}, ps=#{ps}, pe=#{pe}, 
+	placard=#{placard}, plimit=#{plimit}, summary=#{summary}, content=#{content}, time=#{time},status=#{status}
+	<if test="rm != null ">, rm=#{rm}</if>
+	where id=#{id} and uid=#{uid} and (status=0 or status=-2)
+</update>
+
+<!-- 更新讲座 -->
+<update id="updateLctr">
+	UPDATE px_lctr SET  title=#{title}, address=#{address}, phone=#{phone}, s=#{s}, e=#{e}, ps=#{ps}, pe=#{pe}, 
+	placard=#{placard}, plimit=#{plimit}, summary=#{summary}, content=#{content}, time=#{time},status=#{status}
+	<if test="rm != null ">, rm=#{rm}</if>
+	<if test="lb != null ">, lb=#{lb}</if>
+	where id=#{id} and uid=#{uid} and (status=0 or status=-2)
+</update>
+
+<!-- 更新讲座状态，主要用来伪删除 -->
+<update id="updateLctrStatus">
+	UPDATE px_lctr SET  status=#{status}
+	where id=#{id} and uid=#{uid} 
+</update>
+
+<!-- 更新活动状态，主要用来伪删除 -->
+<update id="updateActStatus">
+	UPDATE px_act SET  status=#{status}
+	where id=#{id} and uid=#{uid}
+</update>
+
+<!-- ==============插入开始============== -->
+
+<!-- 插入活动 -->
+<insert id="insertAct">
+	INSERT INTO px_act(id, title, address, phone, s, e, ps, pe, placard, plimit, summary, content, time, status,uid
+	<if test="rm != null ">, rm</if>) 
+	VALUES (
+	#{id},	#{title},#{address},#{phone},#{s},#{e},#{ps},#{pe},#{placard},#{plimit},#{summary},#{content},#{time},#{status},#{uid}
+	<if test="rm != null  ">, #{rm}</if>
+	)
+</insert>
+
+<!-- 插入讲座 -->
+<insert id="insertLctr">
+	INSERT INTO px_lctr(id, title, address, phone, s, e, ps, pe, placard, plimit, summary, content, time, status,uid
+	<if test="rm != null  ">, rm</if>
+	<if test="lb != null  ">, lb</if>)
+	 VALUES (
+	#{id},	#{title},#{address},#{phone},#{s},#{e},#{ps},#{pe},#{placard},#{plimit},#{summary},#{content},#{time},#{status},#{uid}
+	<if test="rm != null ">, #{rm}</if>
+	<if test="lb != null ">, #{lb}</if>
+	)
+</insert>
+
+
+
+<!-- ==============删除开始============== -->
+
+
+</mapper>

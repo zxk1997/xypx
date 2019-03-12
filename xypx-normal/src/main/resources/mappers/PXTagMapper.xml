@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.normal.DAO.PXTagMapper" >
+
+
+<select id="findAllPersTag"  resultType="java.util.HashMap">
+	SELECT id, name FROM px_tag_pers order by i
+</select>
+
+<select id="findAllActTag"  resultType="java.util.HashMap">
+	SELECT id, name FROM px_tag_act order by i
+</select>
+
+<!-- 根据uid寻找用户标签，返回标签id数组 -->
+<select id="findUserTagsIDByUID" resultType="java.lang.String">
+		SELECT px_tag_pers.id FROM px_user_tag
+	left join px_tag_pers on px_tag_pers.id=tid
+	where uid=#{uid}
+</select>
+
+<!-- 根据uid寻找用户标签，返回标签名数组 -->
+<select id="findUserTagsNameByUID" resultType="java.lang.String">
+	SELECT px_tag_pers.name FROM px_user_tag
+	left join px_tag_pers on px_tag_pers.id=tid
+	where uid=#{uid}
+</select>
+
+<!-- 根据活动/讲座id获取对应的活动、人群标签 -->
+<select id="findActTagsById" resultType="com.normal.Model.PXActTag">
+	SELECT aid, t, tid, at FROM px_act_tag WHERE aid=#{id}
+</select>
+
+<!-- ==============插入开始============== -->
+
+<!-- 插入用户标签 -->
+<insert id="insertUserTags">
+	INSERT INTO px_user_tag(uid, tid) VALUES
+	<foreach collection="tags" item="item"  separator="," >
+				(#{uid},#{item})       
+	</foreach>
+</insert>
+
+<!-- 插入活动标签(同时插入活动标签和人群标签) -->
+<insert id="insertActTags">
+	INSERT INTO px_act_tag(aid, t, tid, at) VALUES
+	<trim suffixOverrides=",">
+		<foreach collection="tags1" item="item"  separator="," >
+				(#{id},0,#{item},#{actType})       
+		</foreach>
+		,
+		<foreach collection="tags2" item="item"  separator="," >
+				(#{id},1,#{item},#{actType})       
+		</foreach>
+		,		
+	</trim>
+</insert>
+
+<!-- ==============删除开始============== -->
+
+<!-- 根据UID删除用户所有标签 -->
+<delete id="deleteUserTags" >
+	DELETE FROM px_user_tag WHERE uid=#{uid}
+</delete>
+
+<!--根据aid删除活动标签  -->
+<delete id="deleteActTags"  >
+	DELETE FROM px_act_tag WHERE aid=#{aid} 
+</delete>
+
+
+</mapper>

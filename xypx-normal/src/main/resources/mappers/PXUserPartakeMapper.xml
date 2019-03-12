@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.normal.DAO.PXUserPartakeMapper" >
+
+<!-- ==============查询开始============== -->
+
+<!-- 获取参与状态 -->
+<select id="findJoinStatus" resultType="java.lang.Integer">
+	SELECT count(id) FROM px_user_partake WHERE aid=#{id} and uid=#{uid}
+</select>
+
+<!-- 获取活动/讲座参加人数 -->
+<select id="findJoinCount" resultType="java.lang.Integer">
+	SELECT count(id) FROM px_user_partake WHERE aid=#{id}
+</select>
+
+<!-- 获取参与者列表 -->
+<select id="findPartakeList" resultType="com.normal.Model.PXPartakeUser">
+	<!-- select px_user.nickname,px_user.icon,px_user.u,px_user_partake.phone,email from px_user_partake
+	inner join px_user on px_user.id=px_user_partake.uid
+	inner join px_act on px_act.id=px_user_partake.aid
+	where px_user.id=#{uid} and px_user_partake.aid=#{id}
+	order by px_user_partake.time -->
+	
+	select px_user.nickname,px_user.icon,px_user.u as 'user',px_user_partake.phone,email from px_user_partake
+	inner join px_user on px_user.id=px_user_partake.uid
+	where  px_user_partake.aid=#{id}
+	order by px_user_partake.time
+	<if test="start != null">LIMIT #{start},#{length}</if>
+</select>
+
+<!-- 获取参与者数量 -->
+<select id="findPartakeCnt"  resultType="java.lang.Integer">
+	select count(px_user_partake.id) from  px_user_partake
+	where  px_user_partake.aid=#{id}
+</select>
+<!-- ==============插入开始============== -->
+
+<!-- 参与活动 -->
+<insert id="insertPartake">
+	INSERT INTO px_user_partake(uid, aid, phone, email, at, time) 
+	SELECT #{uid},#{id},#{phone},#{email},#{at},#{time} FROM DUAL
+	where EXISTS(
+	<if test="at == 0">
+		<!-- 活动判断 -->
+		SELECT id FROM px_act WHERE id=#{id} and status=1 and ps&lt;=now() and pe>=now()
+	</if>
+	<if test="at ==1 ">
+		<!-- 讲座判断 -->
+		SELECT id FROM px_lctr WHERE id=#{id} and status=1 and ps&lt;=now() and pe>=now()
+	</if>
+	)
+</insert>
+
+
+<!-- ==============删除开始============== -->
+
+<delete id="deletePartake" >
+	DELETE FROM px_user_partake WHERE aid=#{id} and uid=#{uid}
+</delete>
+
+</mapper>

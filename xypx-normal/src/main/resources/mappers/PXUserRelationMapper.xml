@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.normal.DAO.PXUserRelationMapper" >
+
+<!-- ==============查询开始============== -->
+
+<!-- 查找两个用户之间的关系 -->
+<select id="findUserRelation" resultType="java.lang.String">
+	SELECT type FROM px_user_relation WHERE fid=#{fid} and tid=#{tid}
+</select>
+
+<!-- 用户与活动方是否存在黑名单关系 -->
+<select id="canJoinAct" resultType="java.lang.Integer">
+	select count(px_user_relation.id) from px_user_relation
+	left join px_act on px_act.id=#{id}
+	left join px_user on px_user.id=px_act.uid
+	where fid=px_user.u and tid=#{tid} and type=0
+</select>
+
+<!-- 用户与讲座方是否存在黑名单关系 -->
+<select id="canJoinLctr" resultType="java.lang.Integer">
+	select count(px_user_relation.id) from px_user_relation
+	left join px_lctr on px_lctr.id=#{id}
+	left join px_user on px_user.id=px_lctr.uid
+	where fid=px_user.u and tid=#{tid} and type=0
+</select>
+
+<!-- 获取用户黑名单列表 -->
+<select id="findBlackList" resultType="map">
+	select px_user.icon,px_user.nickname,px_user.u as'user' FROM px_user_relation
+	INNER JOIN px_user on px_user.u=px_user_relation.tid
+	where px_user_relation.fid=#{user} and px_user_relation.type=0
+	<if test="start != null">LIMIT #{start},#{length}</if>
+</select>
+
+<!-- 获取用户黑名单列表 -->
+<select id="getBlackListCnt" resultType="java.lang.Integer">
+	select count(px_user.icon) FROM px_user_relation
+	INNER JOIN px_user on px_user.u=px_user_relation.tid
+	where px_user_relation.fid=#{user} and px_user_relation.type=0
+</select>
+<!-- ==============插入开始============== -->
+
+<!-- 插入黑名单 -->
+<insert id="insertBlack">
+	INSERT INTO px_user_relation(fid, tid) VALUES (#{fid},#{tid})
+</insert>
+
+
+<!-- ==============删除开始============== -->
+
+<delete id="deleteBlack">
+	DELETE FROM px_user_relation WHERE fid=#{fid} and tid=#{tid}
+</delete>
+
+</mapper>

@@ -1,0 +1,17 @@
+server:
+  port: 2000
+      
+spring:
+  data:
+    mongodb:
+      database: imgdb
+      uri: mongodb://127.0.0.1:27017/imgdb 
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+ 
+      
+        
+
+      
