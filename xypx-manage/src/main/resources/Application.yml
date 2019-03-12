@@ -1,0 +1,17 @@
+#内嵌的Tomcat配置
+server:
+  port: 8070
+
+#druid数据连接池配置
+spring:
+  datasource:
+    druid:
+      url: jdbc:mysql://127.0.0.1:3306/xypx_web2?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+      username: root
+      password: 
+      
+#Mybatis配置
+mybatis:
+  mapperLocations : classpath:Mappers/*.xml
+  
+  
