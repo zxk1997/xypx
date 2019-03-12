@@ -30,6 +30,9 @@
   </build>
    
   <modules>
+  	<module>xypx-normal</module>
   	<module>xypx-minifilesys</module>
+  	<module>xypx-manage</module>
+  	
   </modules>
 </project>
