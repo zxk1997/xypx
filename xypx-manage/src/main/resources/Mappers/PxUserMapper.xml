@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="manage.xypx.DAO.PxUserMapper">
+	<resultMap id="BaseResultMap" type="manage.xypx.Model.PxUser">
+		<id column="id" jdbcType="VARCHAR" property="id" />
+		<result column="u" jdbcType="VARCHAR" property="u" />
+		<result column="p" jdbcType="VARCHAR" property="p" />
+		<result column="nickname" jdbcType="VARCHAR"
+			property="nickname" />
+		<result column="icon" jdbcType="VARCHAR" property="icon" />
+		<result column="status" jdbcType="INTEGER" property="status" />
+		<result column="openid" jdbcType="VARCHAR" property="openid" />
+		<result column="time" jdbcType="TIMESTAMP" property="time" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, u, p, nickname, icon, status, openid, time
+	</sql>
+
+	<sql id="UserConditions">
+		<!-- 内联查询保证两个表都存在关联数据时才返回 -->
+		<if test="status !=null and status == -1">
+			inner join px_user_auth_file on
+			px_user_auth_file.uid=px_user.id
+		</if>
+
+		<!-- 使用动态sql，如果标签体有条件成立则自动在前面加WHERE，并删除多余的and -->
+		<trim prefix="WHERE" prefixOverrides="and">
+
+			<if test="status !=null">
+				and status=
+				<choose>
+					<when test="status == -1">
+						<!-- 保存从用户表中取出的用户是还没有验证的 -->
+						0
+					</when>
+					<otherwise>
+						#{status}
+					</otherwise>
+				</choose>
+			</if>
+
+			<!-- 根据搜索的字符串在u和nickname字段中搜索相关的记录 -->
+			<if test="str != null">
+				and CONCAT(IFNULL(`u`,''),IFNULL(`nickname`,''))
+				like
+				CONCAT('%',#{str},'%')
+			</if>
+		</trim>
+
+		<!-- 分页判断 -->
+		<if test="start != null">LIMIT #{start},#{length}</if>
+	</sql>
+	<!-- 根据条件获取用户列表 -->
+	<select id="selectByConditions" parameterType="map"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from px_user
+		<include refid="UserConditions" />
+	</select>
+	
+	<select id="selectTotalByConditions" parameterType="map"
+		resultType="int">
+		select
+		count(id)
+		from px_user
+		<include refid="UserConditions" />
+	</select>	
+
+	<select id="selectUserAuthFileById"
+		parameterType="java.lang.String" resultType="java.lang.String">
+		select url
+		from
+		px_user_auth_file
+		inner join px_user on
+		px_user_auth_file.uid=px_user.id
+		where
+		px_user_auth_file.uid =
+		#{id,jdbcType=VARCHAR}
+	</select>
+
+	<select id="selectByPrimaryKey" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from px_user
+		where id = #{id,jdbcType=VARCHAR}
+	</select>
+
+	<select id="selectAll" parameterType="map"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from px_user
+		<if test="start != null">LIMIT #{start},#{length}</if>
+	</select>
+
+
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from
+		px_user
+		where id = #{id,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="manage.xypx.Model.PxUser">
+		insert into px_user (id, u, p,
+		nickname,
+		icon, status, openid,
+		time)
+		values (#{id,jdbcType=VARCHAR},
+		#{u,jdbcType=VARCHAR},
+		#{p,jdbcType=VARCHAR},
+		#{nickname,jdbcType=VARCHAR},
+		#{icon,jdbcType=VARCHAR},
+		#{status,jdbcType=INTEGER},
+		#{openid,jdbcType=VARCHAR},
+		#{time,jdbcType=TIMESTAMP})
+	</insert>
+	<insert id="insertSelective"
+		parameterType="manage.xypx.Model.PxUser">
+		insert into px_user
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="u != null">
+				u,
+			</if>
+			<if test="p != null">
+				p,
+			</if>
+			<if test="nickname != null">
+				nickname,
+			</if>
+			<if test="icon != null">
+				icon,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="openid != null">
+				openid,
+			</if>
+			<if test="time != null">
+				time,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="u != null">
+				#{u,jdbcType=VARCHAR},
+			</if>
+			<if test="p != null">
+				#{p,jdbcType=VARCHAR},
+			</if>
+			<if test="nickname != null">
+				#{nickname,jdbcType=VARCHAR},
+			</if>
+			<if test="icon != null">
+				#{icon,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=INTEGER},
+			</if>
+			<if test="openid != null">
+				#{openid,jdbcType=VARCHAR},
+			</if>
+			<if test="time != null">
+				#{time,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective"
+		parameterType="manage.xypx.Model.PxUser">
+		update px_user
+		<set>
+			<if test="u != null">
+				u = #{u,jdbcType=VARCHAR},
+			</if>
+			<if test="p != null">
+				p = #{p,jdbcType=VARCHAR},
+			</if>
+			<if test="nickname != null">
+				nickname = #{nickname,jdbcType=VARCHAR},
+			</if>
+			<if test="icon != null">
+				icon = #{icon,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=INTEGER},
+			</if>
+			<if test="openid != null">
+				openid = #{openid,jdbcType=VARCHAR},
+			</if>
+			<if test="time != null">
+				time = #{time,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where id = #{id,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey"
+		parameterType="manage.xypx.Model.PxUser">
+		update px_user
+		set u = #{u,jdbcType=VARCHAR},
+		p =
+		#{p,jdbcType=VARCHAR},
+		nickname = #{nickname,jdbcType=VARCHAR},
+		icon =
+		#{icon,jdbcType=VARCHAR},
+		status = #{status,jdbcType=INTEGER},
+		openid =
+		#{openid,jdbcType=VARCHAR},
+		time = #{time,jdbcType=TIMESTAMP}
+		where id =
+		#{id,jdbcType=VARCHAR}
+	</update>
+</mapper>

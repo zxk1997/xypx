@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="manage.xypx.DAO.PxActRecMapper">
+	<resultMap id="BaseResultMap"
+		type="manage.xypx.Model.PxActRec">
+		<result column="id" jdbcType="INTEGER" property="id" />
+		<result column="aid" jdbcType="VARCHAR" property="aid" />
+		<result column="at" jdbcType="INTEGER" property="at" />
+		<result column="index" jdbcType="INTEGER" property="index" />
+	</resultMap>
+
+	<select id="selectByAid" parameterType="java.lang.String"
+		resultMap="BaseResultMap">
+		select *
+		from px_act_rec
+		where aid = #{aid}
+	</select>
+	<insert id="insert" parameterType="manage.xypx.Model.PxActRec">
+		insert into px_act_rec (id,
+		aid, at,
+		index)
+		values (#{id,jdbcType=INTEGER}, #{aid,jdbcType=VARCHAR},
+		#{at,jdbcType=INTEGER},
+		#{index,jdbcType=INTEGER})
+	</insert>
+	<insert id="insertSelective"
+		parameterType="manage.xypx.Model.PxActRec" useGeneratedKeys="true">
+		insert into px_act_rec
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="aid != null">
+				aid,
+			</if>
+			<if test="at != null">
+				at,
+			</if>
+			<if test="index != null">
+				`index`,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="aid != null">
+				#{aid,jdbcType=VARCHAR},
+			</if>
+			<if test="at != null">
+				#{at,jdbcType=INTEGER},
+			</if>
+			<if test="index != null">
+				#{index,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+
+	<delete id="deleteByActId" parameterType="java.lang.String">
+		delete from px_act_rec
+		where aid = #{aid}
+	</delete>
+</mapper>
