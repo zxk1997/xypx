@@ -7,9 +7,11 @@ import java.util.Map;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import manage.xypx.DAO.PxManageUserMapper;
 import manage.xypx.Enums.PXTagEnum;
 import manage.xypx.Model.PxTag;
 import manage.xypx.Model.PxUser;
@@ -30,6 +32,11 @@ public class PxUserMapperTest {
 	@Autowired
 	PxTagServiceInterface tag;
 	
+	@Autowired
+	PxManageUserMapper manage;
+	
+	@Value("${spring.mvc.alloworigin}")
+	String allowOrigin;
 	@Test
 	public void test() {
 		
@@ -46,18 +53,22 @@ public class PxUserMapperTest {
 //		
 //		System.out.println(act.selectPushTotalByConditions(map));
 		
-		List<PxTag> act=tag.getTagList(map,PXTagEnum.ACT);
-		System.out.println(tag.addTag(PXTagEnum.ACT, "活动标签"));
-		for(PxTag tmp : act)System.out.println(tmp.toString());
-		System.out.println(tag.getTagTotal(map, PXTagEnum.ACT));
+//		List<PxTag> act=tag.getTagList(map,PXTagEnum.ACT);
+//		System.out.println(tag.addTag(PXTagEnum.ACT, "活动标签"));
+//		for(PxTag tmp : act)System.out.println(tmp.toString());
+//		System.out.println(tag.getTagTotal(map, PXTagEnum.ACT));
+//		
+//		System.out.println(tag.renameTag(PXTagEnum.ACT, 1, "重命名"));
+//		System.out.println("============");
+//		
+//		List<PxTag> per=tag.getTagList(map,PXTagEnum.PERS);
+//		System.out.println(tag.addTag(PXTagEnum.PERS, "性格标签"));
+//		System.out.println(tag.getTagTotal(map, PXTagEnum.PERS));
+//		for(PxTag tmp : per)System.out.println(tmp.toString());
 		
-		System.out.println(tag.renameTag(PXTagEnum.ACT, 1, "重命名"));
-		System.out.println("============");
-		
-		List<PxTag> per=tag.getTagList(map,PXTagEnum.PERS);
-		System.out.println(tag.addTag(PXTagEnum.PERS, "性格标签"));
-		System.out.println(tag.getTagTotal(map, PXTagEnum.PERS));
-		for(PxTag tmp : per)System.out.println(tmp.toString());
+		System.out.println(manage.selectByAccount("admin", "admin"));
+		System.out.println(manage.selectByAccount("test", "test"));
+		System.out.println(manage.selectByAccount("admin", "sdf"));
 	}
 	
 	@Test
@@ -70,7 +81,7 @@ public class PxUserMapperTest {
 //		String id="1deccd2173fb45259cfdf0425a719444";
 //		int type=0;
 //		System.out.println(act.setActStatus(id, type, false));
-		
+		System.out.println(allowOrigin);
 		
 	}
 	
