@@ -20,6 +20,7 @@ public class MVCConfig implements WebMvcConfigurer {
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
 		
+		//前面的拦截器已经设置跨域头部，这一段似乎没必要要了
 		registry.addMapping("/**").
 		allowedOrigins(allowOrigin).
 		allowCredentials(true).

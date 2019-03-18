@@ -22,12 +22,7 @@ public interface PxUserMapper {
     
     List<PxUser> selectAll(HashMap<String, Object> map);
     
-    /**
-     * map可传参数：
-     * start和length 代表查询开始的位置和读取的数量 （用于分页）
-     * status 传入0代表查询未实名的用户  1代表查询已经实名的用户 -1代表查询待审核的用户
-     * str 传入模糊匹配的字符串
-     * */
+  
     List<PxUser> selectByConditions(HashMap<String, Object> map);
     
     int selectTotalByConditions(HashMap<String, Object> map);

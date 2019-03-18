@@ -7,9 +7,11 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import manage.xypx.Common.ResponseResult;
 import manage.xypx.Enums.ErrorEnum;
 
+//异常处理类
 @RestControllerAdvice
 public class MyExceptionHandler {
 
+	//处理404错误
 	@ExceptionHandler(NoHandlerFoundException.class)
 	public ResponseResult handlerNotFound() {
 		ResponseResult result=new ResponseResult();
@@ -18,7 +20,7 @@ public class MyExceptionHandler {
 	}
 	
 
-
+	//处理所有异常
 	@ExceptionHandler(Exception.class)
 	public ResponseResult otherException(Exception ex) {
 		ResponseResult result=new ResponseResult();

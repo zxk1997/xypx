@@ -25,6 +25,8 @@ public class UserAuth implements HandlerInterceptor {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
 		boolean state=false;
+		
+		//增加跨域头部
 		response.setHeader("content-type", "application/json;charset=UTF-8");
 		response.setHeader("Access-Control-Allow-Origin", allowOrigin);
 		response.setHeader("Access-Control-Allow-Credentials", "true");	

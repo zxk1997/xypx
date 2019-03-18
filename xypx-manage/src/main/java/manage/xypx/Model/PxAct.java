@@ -163,4 +163,12 @@ public class PxAct {
     public void setContent(String content) {
         this.content = content == null ? null : content.trim();
     }
+
+	@Override
+	public String toString() {
+		return "PxAct [id=" + id + ", title=" + title + ", address=" + address + ", phone=" + phone + ", s=" + s
+				+ ", e=" + e + ", ps=" + ps + ", pe=" + pe + ", placard=" + placard + ", plimit=" + plimit
+				+ ", summary=" + summary + ", time=" + time + ", status=" + status + ", rm=" + rm + ", uid=" + uid
+				+ ", content=" + content + "]";
+	}
 }

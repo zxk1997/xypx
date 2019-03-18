@@ -11,8 +11,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import manage.xypx.DAO.PxActMapper;
 import manage.xypx.DAO.PxManageUserMapper;
+import manage.xypx.DAO.PxUserMapper;
 import manage.xypx.Enums.PXTagEnum;
+import manage.xypx.Model.PxAct;
 import manage.xypx.Model.PxTag;
 import manage.xypx.Model.PxUser;
 import manage.xypx.Service.Interface.PxActServiceInterface;
@@ -34,6 +37,12 @@ public class PxUserMapperTest {
 	
 	@Autowired
 	PxManageUserMapper manage;
+	
+	@Autowired
+	PxUserMapper userMapper;
+	
+	@Autowired
+	PxActMapper actMapper;
 	
 	@Value("${spring.mvc.alloworigin}")
 	String allowOrigin;
@@ -66,9 +75,9 @@ public class PxUserMapperTest {
 //		System.out.println(tag.getTagTotal(map, PXTagEnum.PERS));
 //		for(PxTag tmp : per)System.out.println(tmp.toString());
 		
-		System.out.println(manage.selectByAccount("admin", "admin"));
-		System.out.println(manage.selectByAccount("test", "test"));
-		System.out.println(manage.selectByAccount("admin", "sdf"));
+//		System.out.println(manage.selectByAccount("admin", "admin"));
+//		System.out.println(manage.selectByAccount("test", "test"));
+//		System.out.println(manage.selectByAccount("admin", "sdf"));
 	}
 	
 	@Test
@@ -81,7 +90,21 @@ public class PxUserMapperTest {
 //		String id="1deccd2173fb45259cfdf0425a719444";
 //		int type=0;
 //		System.out.println(act.setActStatus(id, type, false));
-		System.out.println(allowOrigin);
+		//System.out.println(allowOrigin);
+		
+		for(int i=0;i<40;i++)userMapper.insertSelective(RandomUtils.getUser());//插入40个随机用户
+		
+		for(int i=0;i<5;i++) {
+			PxUser u=RandomUtils.getUser();
+			userMapper.insertSelective(u);
+			for(int a=0;a<5;a++) {
+				PxAct act=RandomUtils.getAct(u);
+				actMapper.insertSelective(act);
+			}
+			
+			
+			
+		}
 		
 	}
 	
