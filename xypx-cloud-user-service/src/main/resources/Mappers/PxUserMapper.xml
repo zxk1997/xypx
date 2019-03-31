@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxk1997.px.user.dao.PxUserMapper">
+	<resultMap id="BaseResultMap"
+		type="com.zxk1997.px.common.models.PxUser">
+		<id column="id" jdbcType="VARCHAR" property="id" />
+		<result column="u" jdbcType="VARCHAR" property="u" />
+		<result column="p" jdbcType="VARCHAR" property="p" />
+		<result column="nickname" jdbcType="VARCHAR"
+			property="nickname" />
+		<result column="icon" jdbcType="VARCHAR" property="icon" />
+		<result column="status" jdbcType="INTEGER" property="status" />
+		<result column="openid" jdbcType="VARCHAR" property="openid" />
+		<result column="time" jdbcType="TIMESTAMP" property="time" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		id, u, p, nickname, icon, status, openid, time
+	</sql>
+
+	<select id="loginAuth"
+		parameterType="com.zxk1997.px.common.models.PxUser"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from px_user
+		where u = #{u} and p = #{p}
+	</select>
+
+	<select id="selectByObj"
+		parameterType="com.zxk1997.px.common.models.PxUser"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from px_user
+		where id = #{id} or u = #{u}
+	</select>
+
+	<update id="updateByPrimaryKeySelective"
+		parameterType="com.zxk1997.px.common.models.PxUser">
+		update px_user
+		<set>
+			<if test="u != null">
+				u = #{u,jdbcType=VARCHAR},
+			</if>
+			<if test="p != null">
+				p = #{p,jdbcType=VARCHAR},
+			</if>
+			<if test="nickname != null">
+				nickname = #{nickname,jdbcType=VARCHAR},
+			</if>
+			<if test="icon != null">
+				icon = #{icon,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=INTEGER},
+			</if>
+			<if test="openid != null">
+				openid = #{openid,jdbcType=VARCHAR},
+			</if>
+			<if test="time != null">
+				time = #{time,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where id = #{id,jdbcType=VARCHAR}
+	</update>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from
+		px_user
+		where id = #{id,jdbcType=VARCHAR}
+	</delete>
+
+	<insert id="insert"
+		parameterType="com.zxk1997.px.common.models.PxUser">
+		insert into px_user (id, u, p,
+		nickname,
+		icon, status,
+		openid,
+		time)
+		values (#{id,jdbcType=VARCHAR},
+		#{u,jdbcType=VARCHAR},
+		#{p,jdbcType=VARCHAR},
+		#{nickname,jdbcType=VARCHAR},
+		#{icon,jdbcType=VARCHAR},
+		#{status,jdbcType=INTEGER},
+		#{openid,jdbcType=VARCHAR},
+		#{time,jdbcType=TIMESTAMP})
+	</insert>
+
+
+	<insert id="insertUserAuthFile">
+		INSERT into px_user_auth_file(uid,url) VALUES
+		(#{uid},#{url})
+	</insert>
+
+	<select id="findAuthFileByUid" parameterType="java.lang.String"
+		resultType="java.lang.String">
+		select url
+		from px_user_auth_file
+		where uid = #{uid}
+	</select>
+
+	<delete id="deleteAuthFileByUid"
+		parameterType="java.lang.String">
+		delete from
+		px_user_auth_file
+		where uid = #{uid}
+	</delete>
+
+
+
+</mapper>

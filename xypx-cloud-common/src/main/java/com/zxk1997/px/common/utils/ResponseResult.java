@@ -1,35 +1,25 @@
 package com.zxk1997.px.common.utils;
 
-
-
-import java.util.HashMap;
-import java.util.Map;
-
 import com.zxk1997.px.common.enums.ErrorEnum;
 
-
 public class ResponseResult {
-	private String status = STATUS_OK;//状态
-	private String errorCode = "0";//错误代码
+	private int status = 1;//状态
+	private int errorCode = 0;//错误代码
 	private Object msg = "";//提示信息
 	private Object info;//业务数据
 	
-	public static final String STATUS_OK = "1";
-	public static final String STATUS_ERR = "0";
-	public static final String TOTAL_COUNT = "totalCount";
-	public static final String PAGE_DATA = "listItems";
-	public static final String PARAM_PAGE_SIZE = "pageSize";
-	
-	public String getStatus() {
+
+	public int getStatus() {
 		return status;
 	}
-	public void setStatus(String status) {
+	public void setStatus(int status) {
 		this.status = status;
 	}
-	public String getErrorCode() {
+
+	public int getErrorCode() {
 		return errorCode;
 	}
-	public void setErrorCode(String errorCode) {
+	public void setErrorCode(int errorCode) {
 		this.errorCode = errorCode;
 	}
 	public Object getMsg() {
@@ -45,28 +35,47 @@ public class ResponseResult {
 		this.info = info;
 	}
 
-	
-
-	public void setError(ErrorEnum error){
-		setError(error,error.getMsg());
+	public static ResponseResult success(String msg,Object info) {
+		ResponseResult result=new ResponseResult();
+		result.setMsg(msg);
+		result.setInfo(info);
+		return result;
 	}
 	
-
-	public void setError(ErrorEnum error,String msg){
-		setStatus(STATUS_ERR);
-		setErrorCode(error.getErrCode());
-		setMsg(msg);
+	public static ResponseResult success(Object info) {
+		return success("",info);
 	}
-
-	@SuppressWarnings("unchecked")
-	public void setDataAttr(String key, Object data) {
-		Map<String, Object> attrMap = null;
-		if (getInfo() == null) {
-			attrMap = new HashMap<String, Object>();
-			setInfo(attrMap);
-		} else {
-			attrMap = (Map<String, Object>)getInfo();
-		}
-		attrMap.put(key, data);
+	
+	public static ResponseResult success() {
+		return success("",null);
 	}
+	
+	public static ResponseResult error(ErrorEnum e) {
+		ResponseResult result=new ResponseResult();
+		result.setMsg(e.getMsg());
+		result.setStatus(0);
+		result.setErrorCode(e.getErrCode());
+		return result;
+	}
+	
+	public static ResponseResult error(String msg) {
+		ResponseResult result=new ResponseResult();
+		result.setMsg(msg);
+		result.setStatus(0);
+		result.setErrorCode(-1);
+		return result;
+	}
+	
+	public static ResponseResult error() {
+		return error("");
+	}
+	@Override
+	public String toString() {
+		return "ResponseResult [status=" + status + ", errorCode=" + errorCode + ", msg=" + msg + ", info=" + info
+				+ "]";
+	}
+	
+	
+
+
 }

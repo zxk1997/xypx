@@ -21,5 +21,9 @@ public interface ActService {
 	//取消参加
 	int unJoinAct(PxUserPartake partake);
 	
+	//添加推送
+	int addRec(PxActivity obj);
 	
+	//删除推送
+	int delRec(String aid);
 }

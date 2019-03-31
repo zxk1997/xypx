@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.zxk1997.px.activity.service.ActService;
@@ -73,7 +74,7 @@ public class ActController {
 	}
 	
 	@DeleteMapping("/{id}")
-	public Integer del(@PathVariable("id") String id,PxActType type) {
+	public Integer del(@PathVariable("id") String id,@RequestParam("type")PxActType type) {
 		if(id!=null && type!=null) {
 			return act.delAct(id, type);
 		}
@@ -94,6 +95,23 @@ public class ActController {
 			PxUserPartake p=new PxUserPartake();
 			p.setId(id);
 			return act.unJoinAct(p);
+		}
+		return -1;
+	}
+	
+	@PostMapping("/rec/")
+	public Integer addRec(@RequestBody PxActivity a) {
+		if(a!=null) {
+			
+			return act.addRec(a);
+		}
+		return -1;
+	}
+	
+	@DeleteMapping("/rec/{aid}")
+	public Integer delRec(@PathVariable("aid") String aid) {
+		if(aid!=null) {
+			return act.delRec(aid);
 		}
 		return -1;
 	}

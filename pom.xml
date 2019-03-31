@@ -64,5 +64,7 @@
 		<module>xypx-cloud-activity-service</module>
 		<module>xypx-cloud-common</module>
 		<module>xypx-cloud-api</module>
+		<module>xypx-cloud-user-service</module>
+		<module>xypx-cloud-search-service</module>
 	</modules>
 </project>

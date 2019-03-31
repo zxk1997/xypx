@@ -4,12 +4,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.zxk1997.px.activity.dao.PxActMapper;
+import com.zxk1997.px.activity.dao.PxActRecMapper;
 import com.zxk1997.px.activity.dao.PxLctrMapper;
 import com.zxk1997.px.activity.dao.PxUserPartakeMapper;
 import com.zxk1997.px.activity.service.ActService;
 import com.zxk1997.px.common.enums.PxActType;
+import com.zxk1997.px.common.models.PxAct;
+import com.zxk1997.px.common.models.PxActRec;
 import com.zxk1997.px.common.models.PxActivity;
+import com.zxk1997.px.common.models.PxLctr;
 import com.zxk1997.px.common.models.PxUserPartake;
+import com.zxk1997.px.common.utils.RandomUtils;
 
 @Service
 public class ActServiceImpl implements ActService {
@@ -21,14 +26,21 @@ public class ActServiceImpl implements ActService {
 	PxLctrMapper lctr;
 	
 	@Autowired
+	PxActRecMapper rec;
+	
+	@Autowired
 	PxUserPartakeMapper partake;
 	
 	@Override
 	public int addAct(PxActivity obj) {
 		if(obj.getType() == PxActType.ACTIVITY) {
-			return act.insertSelective(obj.getAct());
+			PxAct a=obj.getAct();
+			a.setId(RandomUtils.getUUID());
+			return act.insertSelective(a);
 		}else {
-			return lctr.insertSelective(obj.getLctr());
+			PxLctr l=obj.getLctr();
+			l.setId(RandomUtils.getUUID());
+			return lctr.insertSelective(l);
 		}
 	}
 
@@ -67,6 +79,30 @@ public class ActServiceImpl implements ActService {
 			return this.partake.deleteByObj(partake);
 		}
 		
+	}
+
+	@Override
+	public int addRec(PxActivity obj) {
+		PxActRec r=new PxActRec();
+		if(obj.getType()==PxActType.ACTIVITY) {
+			r.setAid(obj.getAct().getId());
+			r.setAt(0);
+		}else {
+			r.setAid(obj.getLctr().getId());
+			r.setAt(1);
+		}
+		
+		if(rec.selectByAid(r.getAid())!=null) {
+			return -1;//已存在
+		}else {
+			return rec.insertSelective(r);
+		}
+	}
+
+	@Override
+	public int delRec(String aid) {
+		
+		return rec.deleteByActId(aid);
 	}
 
 }

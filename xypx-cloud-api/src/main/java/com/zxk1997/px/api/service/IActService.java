@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.zxk1997.px.common.ServiceName;
 import com.zxk1997.px.common.enums.PxActType;
@@ -16,17 +18,24 @@ import com.zxk1997.px.common.models.PxUserPartake;
 public interface IActService {
 	
 	@PostMapping("/act/")
-	public Integer add(PxActivity a);
+	Integer add(PxActivity a);
 	
 	@PutMapping("/act/")
-	public Integer edit(PxActivity a);
+	Integer edit(PxActivity a);
 	
 	@DeleteMapping("/act/{id}")
-	public Integer del(@PathVariable("id") String id,PxActType type);
+	Integer del(@PathVariable("id") String id,@RequestParam("type") PxActType type);
 	
 	@PostMapping("/act/partake")
-	public Integer join(PxUserPartake partake);
+	Integer join(PxUserPartake partake);
 	
 	@DeleteMapping("/act/partake/{id}")
-	public Integer unJoin(@PathVariable("id") Integer id);
+	Integer unJoin(@PathVariable("id") Integer id);
+	
+	@PostMapping("/act/rec/")
+	Integer addRec(PxActivity a) ;
+	
+	@DeleteMapping("/act/rec/{aid}")
+	Integer delRec(@PathVariable("aid") String aid);
+	
 }

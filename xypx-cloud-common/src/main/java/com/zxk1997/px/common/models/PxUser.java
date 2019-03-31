@@ -2,25 +2,40 @@ package com.zxk1997.px.common.models;
 
 import java.util.Date;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
+
+import org.hibernate.validator.constraints.Length;
+
+import com.zxk1997.px.common.interfaces.OpType;
+
 
 
 public class PxUser {
+	
+	@NotNull(groups=OpType.U.class)
+	@Null(groups=OpType.C.class)
     private String id;
 
-
+	@Length(min=6,max=12)
     private String u;
 
-
+	@Length(min=6,max=16)
     private String p;
 
+	@Length(min=4,max=8,groups=OpType.C.class)
     private String nickname;
 
+	@Null
     private String icon;
 
+    @Null
     private Integer status;
 
+    @Null
     private String openid;
 
+    @Null
     private Date time;
 
     public String getId() {
