@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxk1997.px.activity.dao.PxActMapper">
+
+	<sql id="pusFields">
+		${table}.id,
+		${table}.placard,
+		${table}.title as 'name',
+		${table}.summary,
+		${type}
+		as 'type'
+	</sql>
+
+	<sql id="baseFields">
+		<include refid="pusFields"></include>
+		,
+		${table}.s as
+		'startTime',
+		${table}.e as 'endTime',
+		${table}.plimit,
+
+		${table}.address,
+		px_user.nickname as 'host',
+		${table}.content
+
+	</sql>
+
+
+
+	<sql id="count">
+		count(${table}.id) as cnt
+	</sql>
+
+	<!-- 这一块好像搞的有点复杂。。。先做吧，后面再优化 -->
+	<!-- field查询的字段id，用<sql>定义 table查询的表 joinTable内联查询的表 cf查询表用来判断的字段 jf内联表用来判断的字段 -->
+	<sql id="baseConditions">
+		SELECT
+		<include refid="${field}"></include>
+		FROM ${table}
+		inner join ${joinTable} on
+		${table}.${cf}=${joinTable}.${jf}
+		<trim prefix="WHERE" prefixOverrides="and">
+			<if test="status != null">
+				and ${table}.status=#{status}
+			</if>
+			<if test="str != null">
+				and ${table}.title like CONCAT('%',#{str},'%' )
+			</if>
+			<if test="id != null">
+				and ${table}.id=#{id}
+			</if>
+		</trim>
+
+	</sql>
+
+	<sql id="baseQuery">
+		<include refid="baseConditions">
+			<property name="table" value="px_act" />
+			<property name="field" value="baseFields" />
+			<property name="type" value="0" />
+			<property name="joinTable" value="px_user" />
+			<property name="cf" value="uid" />
+			<property name="jf" value="id" />
+		</include>
+		union
+		<include refid="baseConditions">
+			<property name="table" value="px_lctr" />
+			<property name="field" value="baseFields" />
+			<property name="type" value="1" />
+			<property name="joinTable" value="px_user" />
+			<property name="cf" value="uid" />
+			<property name="jf" value="id" />
+		</include>
+		<if test="start != null">LIMIT #{start},#{length}</if>
+	</sql>
+
+	<!-- 查询活动详情的 -->
+	<select id="selectByConditions" parameterType="map"
+		resultType="com.zxk1997.px.common.models.PxActDetail">
+		<include refid="baseQuery"></include>
+	</select>
+	
+	<select id="selectByConditionsToReview" parameterType="map"
+		resultType="com.zxk1997.px.common.models.PxActReview">
+		<include refid="baseQuery"></include>
+	</select>
+	
+	<select id="selectByConditionsToBase" parameterType="map"
+		resultType="com.zxk1997.px.common.models.PxActBase">
+		<include refid="baseQuery"></include>
+	</select>
+
+	<select id="selectTotalByConditions" parameterType="map"
+		resultType="int">
+
+		select a.cnt+b.cnt from
+
+		(
+		<include refid="baseConditions">
+			<property name="table" value="px_act" />
+			<property name="field" value="count" />
+			<property name="joinTable" value="px_user" />
+			<property name="cf" value="uid" />
+			<property name="jf" value="id" />
+		</include>
+		) a,
+		(
+		<include refid="baseConditions">
+			<property name="table" value="px_lctr" />
+			<property name="field" value="count" />
+			<property name="joinTable" value="px_user" />
+			<property name="cf" value="uid" />
+			<property name="jf" value="id" />
+		</include>
+		)b
+
+	</select>
+
+	<!-- 查询推送的，大体结构跟上面一样，待优化 -->
+
+	<select id="selectPushByConditions" parameterType="map"
+		resultType="com.zxk1997.px.common.models.PxActBase">
+		<include refid="baseConditions">
+			<property name="table" value="px_act" />
+			<property name="field" value="pusFields" />
+			<property name="type" value="0" />
+			<property name="joinTable" value="px_act_rec" />
+			<property name="cf" value="id" />
+			<property name="jf" value="aid" />
+		</include>
+		union
+		<include refid="baseConditions">
+			<property name="table" value="px_lctr" />
+			<property name="field" value="pusFields" />
+			<property name="type" value="1" />
+			<property name="joinTable" value="px_act_rec" />
+			<property name="cf" value="id" />
+			<property name="jf" value="aid" />
+		</include>
+		<if test="start != null">LIMIT #{start},#{length}</if>
+	</select>
+
+	<select id="selectPushTotalByConditions" parameterType="map"
+		resultType="int">
+
+		select a.cnt+b.cnt from
+
+		(
+		<include refid="baseConditions">
+			<property name="table" value="px_act" />
+			<property name="field" value="count" />
+			<property name="joinTable" value="px_act_rec" />
+			<property name="cf" value="id" />
+			<property name="jf" value="aid" />
+		</include>
+		) a,
+		(
+		<include refid="baseConditions">
+			<property name="table" value="px_lctr" />
+			<property name="field" value="count" />
+			<property name="joinTable" value="px_act_rec" />
+			<property name="cf" value="id" />
+			<property name="jf" value="aid" />
+		</include>
+		)b
+
+	</select>
+
+
+	<!-- 下面是mybatis工具自动生成的 -->
+
+	<resultMap id="BaseResultMap" type="com.zxk1997.px.common.models.PxAct">
+		<id column="id" jdbcType="VARCHAR" property="id" />
+		<result column="title" jdbcType="VARCHAR" property="title" />
+		<result column="address" jdbcType="VARCHAR" property="address" />
+		<result column="phone" jdbcType="VARCHAR" property="phone" />
+		<result column="s" jdbcType="TIMESTAMP" property="s" />
+		<result column="e" jdbcType="TIMESTAMP" property="e" />
+		<result column="ps" jdbcType="TIMESTAMP" property="ps" />
+		<result column="pe" jdbcType="TIMESTAMP" property="pe" />
+		<result column="placard" jdbcType="VARCHAR" property="placard" />
+		<result column="plimit" jdbcType="INTEGER" property="plimit" />
+		<result column="summary" jdbcType="VARCHAR" property="summary" />
+		<result column="time" jdbcType="TIMESTAMP" property="time" />
+		<result column="status" jdbcType="INTEGER" property="status" />
+		<result column="rm" jdbcType="VARCHAR" property="rm" />
+		<result column="uid" jdbcType="VARCHAR" property="uid" />
+	</resultMap>
+	<resultMap extends="BaseResultMap" id="ResultMapWithBLOBs"
+		type="com.zxk1997.px.common.models.PxAct">
+		<result column="content" jdbcType="LONGVARCHAR"
+			property="content" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, title, address, phone, s, e, ps, pe, placard, plimit,
+		summary, time,
+		status,
+		rm, uid
+	</sql>
+	<sql id="Blob_Column_List">
+		content
+	</sql>
+	<select id="selectByPrimaryKey" parameterType="java.lang.String"
+		resultMap="ResultMapWithBLOBs">
+		select
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from px_act
+		where id = #{id,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from px_act
+		where id = #{id,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.zxk1997.px.common.models.PxAct">
+		insert into px_act (id, title,
+		address,
+		phone, s, e, ps,
+		pe, placard, plimit,
+		summary, time, status,
+		rm,
+		uid, content
+		)
+		values (#{id,jdbcType=VARCHAR},
+		#{title,jdbcType=VARCHAR},
+		#{address,jdbcType=VARCHAR},
+		#{phone,jdbcType=VARCHAR}, #{s,jdbcType=TIMESTAMP},
+		#{e,jdbcType=TIMESTAMP},
+		#{ps,jdbcType=TIMESTAMP},
+		#{pe,jdbcType=TIMESTAMP}, #{placard,jdbcType=VARCHAR},
+		#{plimit,jdbcType=INTEGER},
+		#{summary,jdbcType=VARCHAR},
+		#{time,jdbcType=TIMESTAMP},
+		#{status,jdbcType=INTEGER},
+		#{rm,jdbcType=VARCHAR}, #{uid,jdbcType=VARCHAR},
+		#{content,jdbcType=LONGVARCHAR}
+		)
+	</insert>
+	<insert id="insertSelective"
+		parameterType="com.zxk1997.px.common.models.PxAct">
+		insert into px_act
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="title != null">
+				title,
+			</if>
+			<if test="address != null">
+				address,
+			</if>
+			<if test="phone != null">
+				phone,
+			</if>
+			<if test="s != null">
+				s,
+			</if>
+			<if test="e != null">
+				e,
+			</if>
+			<if test="ps != null">
+				ps,
+			</if>
+			<if test="pe != null">
+				pe,
+			</if>
+			<if test="placard != null">
+				placard,
+			</if>
+			<if test="plimit != null">
+				plimit,
+			</if>
+			<if test="summary != null">
+				summary,
+			</if>
+			<if test="time != null">
+				time,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="rm != null">
+				rm,
+			</if>
+			<if test="uid != null">
+				uid,
+			</if>
+			<if test="content != null">
+				content,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=VARCHAR},
+			</if>
+			<if test="title != null">
+				#{title,jdbcType=VARCHAR},
+			</if>
+			<if test="address != null">
+				#{address,jdbcType=VARCHAR},
+			</if>
+			<if test="phone != null">
+				#{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="s != null">
+				#{s,jdbcType=TIMESTAMP},
+			</if>
+			<if test="e != null">
+				#{e,jdbcType=TIMESTAMP},
+			</if>
+			<if test="ps != null">
+				#{ps,jdbcType=TIMESTAMP},
+			</if>
+			<if test="pe != null">
+				#{pe,jdbcType=TIMESTAMP},
+			</if>
+			<if test="placard != null">
+				#{placard,jdbcType=VARCHAR},
+			</if>
+			<if test="plimit != null">
+				#{plimit,jdbcType=INTEGER},
+			</if>
+			<if test="summary != null">
+				#{summary,jdbcType=VARCHAR},
+			</if>
+			<if test="time != null">
+				#{time,jdbcType=TIMESTAMP},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=INTEGER},
+			</if>
+			<if test="rm != null">
+				#{rm,jdbcType=VARCHAR},
+			</if>
+			<if test="uid != null">
+				#{uid,jdbcType=VARCHAR},
+			</if>
+			<if test="content != null">
+				#{content,jdbcType=LONGVARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective"
+		parameterType="com.zxk1997.px.common.models.PxAct">
+		update px_act
+		<set>
+			<if test="title != null">
+				title = #{title,jdbcType=VARCHAR},
+			</if>
+			<if test="address != null">
+				address = #{address,jdbcType=VARCHAR},
+			</if>
+			<if test="phone != null">
+				phone = #{phone,jdbcType=VARCHAR},
+			</if>
+			<if test="s != null">
+				s = #{s,jdbcType=TIMESTAMP},
+			</if>
+			<if test="e != null">
+				e = #{e,jdbcType=TIMESTAMP},
+			</if>
+			<if test="ps != null">
+				ps = #{ps,jdbcType=TIMESTAMP},
+			</if>
+			<if test="pe != null">
+				pe = #{pe,jdbcType=TIMESTAMP},
+			</if>
+			<if test="placard != null">
+				placard = #{placard,jdbcType=VARCHAR},
+			</if>
+			<if test="plimit != null">
+				plimit = #{plimit,jdbcType=INTEGER},
+			</if>
+			<if test="summary != null">
+				summary = #{summary,jdbcType=VARCHAR},
+			</if>
+			<if test="time != null">
+				time = #{time,jdbcType=TIMESTAMP},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=INTEGER},
+			</if>
+			<if test="rm != null">
+				rm = #{rm,jdbcType=VARCHAR},
+			</if>
+			<if test="uid != null">
+				uid = #{uid,jdbcType=VARCHAR},
+			</if>
+			<if test="content != null">
+				content = #{content,jdbcType=LONGVARCHAR},
+			</if>
+		</set>
+		where id = #{id,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKeyWithBLOBs"
+		parameterType="com.zxk1997.px.common.models.PxAct">
+		update px_act
+		set title = #{title,jdbcType=VARCHAR},
+		address = #{address,jdbcType=VARCHAR},
+		phone =
+		#{phone,jdbcType=VARCHAR},
+		s = #{s,jdbcType=TIMESTAMP},
+		e =
+		#{e,jdbcType=TIMESTAMP},
+		ps = #{ps,jdbcType=TIMESTAMP},
+		pe =
+		#{pe,jdbcType=TIMESTAMP},
+		placard = #{placard,jdbcType=VARCHAR},
+		plimit
+		= #{plimit,jdbcType=INTEGER},
+		summary = #{summary,jdbcType=VARCHAR},
+		time = #{time,jdbcType=TIMESTAMP},
+		status = #{status,jdbcType=INTEGER},
+		rm = #{rm,jdbcType=VARCHAR},
+		uid = #{uid,jdbcType=VARCHAR},
+		content =
+		#{content,jdbcType=LONGVARCHAR}
+		where id = #{id,jdbcType=VARCHAR}
+	</update>
+	<update id="updateByPrimaryKey"
+		parameterType="com.zxk1997.px.common.models.PxAct">
+		update px_act
+		set title = #{title,jdbcType=VARCHAR},
+		address = #{address,jdbcType=VARCHAR},
+		phone =
+		#{phone,jdbcType=VARCHAR},
+		s = #{s,jdbcType=TIMESTAMP},
+		e =
+		#{e,jdbcType=TIMESTAMP},
+		ps = #{ps,jdbcType=TIMESTAMP},
+		pe =
+		#{pe,jdbcType=TIMESTAMP},
+		placard = #{placard,jdbcType=VARCHAR},
+		plimit
+		= #{plimit,jdbcType=INTEGER},
+		summary = #{summary,jdbcType=VARCHAR},
+		time = #{time,jdbcType=TIMESTAMP},
+		status = #{status,jdbcType=INTEGER},
+		rm = #{rm,jdbcType=VARCHAR},
+		uid = #{uid,jdbcType=VARCHAR}
+		where id =
+		#{id,jdbcType=VARCHAR}
+	</update>
+</mapper>

@@ -15,6 +15,7 @@ public class MyExceptionHandler {
 	@ExceptionHandler(NoHandlerFoundException.class)
 	public ResponseResult handlerNotFound() {
 		ResponseResult result=new ResponseResult();
+		String str="";
 		result.setError(ErrorEnum.NOT_FOUND);
 		return result;
 	}

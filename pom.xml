@@ -1,38 +1,68 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>com.zxk1997</groupId>
-  <artifactId>xypx-parent</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <packaging>pom</packaging>
-  
-   
-  <properties>
-	<maven.compiler.source>1.8</maven.compiler.source>
-	<maven.compiler.target>1.8</maven.compiler.target>  	
-  </properties>
-  
-  <dependencyManagement>
-  	<dependencies>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.zxk1997</groupId>
+	<artifactId>xypx-parent</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+
+	<properties>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-dependencies -->
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>Finchley.RELEASE</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
+			<!-- Spring Boot依赖 -->
+			<dependency>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>2.1.3.RELEASE</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>com.zxk1997</groupId>
+				<artifactId>xypx-cloud-common</artifactId>
+				<version>0.1</version>
+			</dependency>
+
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-dependencies</artifactId>
-			<version>2.1.3.RELEASE</version>
-			<type>pom</type>
-			<scope>import</scope>
-		</dependency> 
-  	</dependencies>
-  </dependencyManagement>
-  
-  <build>
-  	<plugins>
-  	
-  	</plugins>
-  </build>
-   
-  <modules>
-  	<module>xypx-normal</module>
-  	<module>xypx-minifilesys</module>
-  	<module>xypx-manage</module>
-  	
-  </modules>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-eureka</artifactId>
+			<version>1.4.6.RELEASE</version>
+		</dependency>
+
+		</dependencies>
+
+	</dependencyManagement>
+
+	<build>
+		<plugins>
+
+		</plugins>
+	</build>
+
+	<modules>
+		<module>xypx-normal</module>
+		<module>xypx-minifilesys</module>
+		<module>xypx-manage</module>
+
+		<module>xypx-cloud-eureka</module>
+		<module>xypx-cloud-activity-service</module>
+		<module>xypx-cloud-common</module>
+		<module>xypx-cloud-api</module>
+	</modules>
 </project>

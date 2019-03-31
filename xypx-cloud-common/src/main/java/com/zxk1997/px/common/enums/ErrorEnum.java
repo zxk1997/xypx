@@ -1,4 +1,4 @@
-package com.normal.Enums;
+package com.zxk1997.px.common.enums;
 
 
 
@@ -8,10 +8,10 @@ public enum ErrorEnum {
 	PARAM_ERR("101","参数错误"),
 	SAVE_ERR("600","保存出错"),
 	DEL_ERR("700","删除出错"),
-	PWD_ACT_ERR("800","账号或密码错误"),
+	PWD_ACT_ERR("800","账号或密码错"),
 	NOT_FOUND("404","未定义的操作"),
 	OP_FAIL("999","操作失败"), 
-	NOT_LOGIN("-1","请登录后再操作");
+	NOT_LOGIN("-1","请登录后再操");
 	
 	private String errCode;
 	private String msg;
@@ -26,12 +26,5 @@ public enum ErrorEnum {
 	public String getMsg() {
 		return msg;
 	}
-	@Override
-	public String toString() {
-		
-		return errCode;
-	}
-	
-	
 	
 }

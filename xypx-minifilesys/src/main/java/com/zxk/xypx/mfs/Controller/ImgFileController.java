@@ -79,6 +79,7 @@ public class ImgFileController {
 			throws IllegalStateException, IOException {
 		Query q = Query.query(Criteria.where("filename").is(filename));
 		GridFSFile file = gridFsTemplate.findOne(q);
+
 		if (file != null) {
 			GridFSDownloadStream gridFS = gridFSBucket.openDownloadStream(file.getObjectId());
 			GridFsResource gridFsResource = new GridFsResource(file, gridFS);
