@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxk1997.px.search.dao.PxUserMapper">
+	<resultMap id="BaseResultMap" type="PxUser">
+		<id column="id" jdbcType="VARCHAR" property="id" />
+		<result column="u" jdbcType="VARCHAR" property="u" />
+		<result column="p" jdbcType="VARCHAR" property="p" />
+		<result column="nickname" jdbcType="VARCHAR"
+			property="nickname" />
+		<result column="icon" jdbcType="VARCHAR" property="icon" />
+		<result column="status" jdbcType="INTEGER" property="status" />
+		<result column="openid" jdbcType="VARCHAR" property="openid" />
+		<result column="time" jdbcType="TIMESTAMP" property="time" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		id, u, p, nickname, icon, status, openid, time
+	</sql>
+
+	<sql id="UserConditions">
+		<!-- 内联查询保证两个表都存在关联数据时才返回 -->
+		<if test="status !=null and status == -1">
+			inner join px_user_auth_file on
+			px_user_auth_file.uid=px_user.id
+		</if>
+
+		<!-- 使用动态sql，如果标签体有条件成立则自动在前面加WHERE，并删除多余的and -->
+		<trim prefix="WHERE" prefixOverrides="and">
+
+			<if test="status !=null">
+				and status=
+				<choose>
+					<when test="status == -1">
+						<!-- 保存从用户表中取出的用户是还没有验证的 -->
+						0
+					</when>
+					<otherwise>
+						#{status}
+					</otherwise>
+				</choose>
+			</if>
+
+			<!-- 根据搜索的字符串在u和nickname字段中搜索相关的记录 -->
+			<if test="str != null">
+				and CONCAT(IFNULL(`u`,''),IFNULL(`nickname`,''))
+				like
+				CONCAT('%',#{str},'%')
+			</if>
+			
+			<if test="uid != null">
+				and id=#{uid}
+			</if>
+		</trim>
+
+		<!-- 分页判断 -->
+		<if test="start != null">LIMIT #{start},#{length}</if>
+	</sql>
+	<!-- 根据条件获取用户列表 -->
+	<select id="selectByConditions" parameterType="SearchParm"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from px_user
+		<include refid="UserConditions" />
+	</select>
+	
+	<select id="selectTotalByConditions" parameterType="SearchParm"
+		resultType="int">
+		select
+		count(id)
+		from px_user
+		<include refid="UserConditions" />
+	</select>	
+
+	<select id="selectUserAuthFileById"
+		parameterType="java.lang.String" resultType="java.lang.String">
+		select url
+		from
+		px_user_auth_file
+		inner join px_user on
+		px_user_auth_file.uid=px_user.id
+		where
+		px_user_auth_file.uid =
+		#{id}
+	</select>
+
+
+
+
+</mapper>

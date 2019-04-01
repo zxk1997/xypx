@@ -7,7 +7,6 @@ import javax.validation.Validator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
-
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,11 +18,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.zxk1997.px.activity.service.ActService;
+import com.zxk1997.px.activity.service.TagService;
+import com.zxk1997.px.common.enums.PXTagEnum;
 import com.zxk1997.px.common.enums.PxActType;
 import com.zxk1997.px.common.interfaces.OpType;
 import com.zxk1997.px.common.models.PxAct;
 import com.zxk1997.px.common.models.PxActivity;
 import com.zxk1997.px.common.models.PxLctr;
+import com.zxk1997.px.common.models.PxTag;
 import com.zxk1997.px.common.models.PxUserPartake;
 
 @RestController
@@ -32,6 +34,9 @@ public class ActController {
 	
 	@Autowired
 	ActService act;
+	
+	@Autowired
+	TagService tag;
 	
 	@Autowired
 	Validator v;
@@ -115,5 +120,21 @@ public class ActController {
 		}
 		return -1;
 	}
+	
+	@PostMapping("/tag")
+	public Integer addTag(@RequestBody PxTag t,@RequestParam("type") PXTagEnum type) {
+		return tag.addTag(t, type);
+	}
+	
+	@DeleteMapping("/tag")
+	public Integer delTag(@RequestBody PxTag t,@RequestParam("type") PXTagEnum type) {
+		return tag.delTag(t, type);
+	}
+	
+	@PutMapping("/tag")
+	public Integer editTag(@RequestBody PxTag t,@RequestParam("type") PXTagEnum type) {
+		return tag.editTag(t, type);
+	}
+	
 	
 }

@@ -5,7 +5,15 @@ import java.util.Date;
 public class PxActReview extends PxActBase {
 	private String placard;
 	private String host;
+	private String icon;
 	private Date startTime;
+	
+	public String getIcon() {
+		return icon;
+	}
+	public void setIcon(String icon) {
+		this.icon = icon;
+	}
 	public String getPlacard() {
 		return placard;
 	}

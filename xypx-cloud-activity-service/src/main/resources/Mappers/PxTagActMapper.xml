@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxk1997.px.activity.dao.PxTagActMapper">
+	<resultMap id="BaseResultMap"
+		type="com.zxk1997.px.common.models.PxTag">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="i" jdbcType="INTEGER" property="i" />
+	</resultMap>
+
+
+	<select id="selectByName"
+		parameterType="com.zxk1997.px.common.models.PxTag"
+		resultMap="BaseResultMap">
+		select
+		id,name,i
+		<if test="i == 0">
+			from px_tag_act
+		</if>
+		<if test="i != 0">
+			from px_tag_pers
+		</if>
+		where name = #{name}
+	</select>
+
+	<delete id="deleteByPrimaryKey"
+		parameterType="com.zxk1997.px.common.models.PxTag">
+		delete
+		<if test="i == 0">
+			from px_tag_act
+		</if>
+		<if test="i != 0">
+			from px_tag_pers
+		</if>
+		where id = #{id,jdbcType=INTEGER}
+	</delete>
+
+	<insert id="insertSelective"
+		parameterType="com.zxk1997.px.common.models.PxTag"
+		useGeneratedKeys="true">
+		insert into
+		<if test="i == 0">
+			px_tag_act
+		</if>
+		<if test="i != 0">
+			px_tag_pers
+		</if>
+		(name,i) values(#{name,jdbcType=VARCHAR},0)
+	</insert>
+
+
+	<update id="updateByPrimaryKeySelective"
+		parameterType="com.zxk1997.px.common.models.PxTag"
+		useGeneratedKeys="true">
+		update
+		<if test="i == 0">
+			px_tag_act
+		</if>
+		<if test="i != 0">
+			px_tag_pers
+		</if>
+
+
+		<set>
+			<if test="name != null">
+				name = #{name,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where `id` = #{id,jdbcType=INTEGER}
+	</update>
+
+</mapper>

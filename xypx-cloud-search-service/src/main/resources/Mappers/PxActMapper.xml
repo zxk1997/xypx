@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxk1997.px.search.dao.PxActMapper">
+
+	<sql id="actBaseFields">
+		${table}.id,
+		${table}.title as 'name',
+		${table}.summary,
+		${type} as 'type'
+	</sql>
+
+	<sql id="actReviewFields">
+		<include refid="actBaseFields" />
+		,
+		${table}.placard,
+		px_user.nickname as 'host',
+		px_user.icon,
+		${table}.s
+		as 'startTime'
+	</sql>
+
+	<sql id="actDetailFields">
+		<include refid="actReviewFields" />
+		,
+		${table}.e as 'endTime',
+		${table}.address,
+		${table}.plimit,
+		${table}.content,
+		${table}.ps,
+		${table}.pe
+	</sql>
+
+	<sql id="count">
+		count(${table}.id) as cnt
+	</sql>
+
+	<sql id="page">
+		<if test="start != null">LIMIT #{start},#{length}</if>
+	</sql>
+
+
+	<!-- 这一块好像搞的有点复杂。。。先做吧，后面再优化 -->
+	<!-- field查询的字段id，用<sql>定义 table查询的表 joinTable内联查询的表 cf查询表用来判断的字段 jf内联表用来判断的字段 -->
+	<sql id="baseConditions">
+		SELECT
+		<include refid="${field}"></include>
+		FROM ${table}
+		inner join ${joinTable} on
+		${table}.${cf}=${joinTable}.${jf}
+		${ij}
+		<trim prefix="WHERE" prefixOverrides="and">
+			<if test="status != null">
+				and ${table}.status=#{status}
+			</if>
+			<if test="str != null">
+				and ${table}.title like CONCAT('%',#{str},'%' )
+			</if>
+			<if test="id != null">
+				and ${table}.id=#{id}
+			</if>
+			<if test="host != null">
+				and ${table}.uid=#{host}
+			</if>
+			<if test="uid != null">
+				and px_user.id=#{uid}
+			</if>
+			<if test="starttime != null">
+				and ${table}.s>=#{starttime}
+			</if>
+		</trim>
+	</sql>
+
+	<sql id="baseQuery">
+		<trim prefixOverrides="union">
+			<if test="type == null or type == 0">
+				union
+				<include refid="baseConditions">
+					<property name="table" value="px_act" />
+					<property name="type" value="0" />
+					<property name="joinTable" value="px_user" />
+					<property name="cf" value="uid" />
+					<property name="jf" value="id" />
+					<property name="ij" value="" />
+				</include>
+			</if>
+			<if test="type == null or type == 1">
+				union
+				<include refid="baseConditions">
+					<property name="table" value="px_lctr" />
+					<property name="type" value="1" />
+					<property name="joinTable" value="px_user" />
+					<property name="cf" value="uid" />
+					<property name="jf" value="id" />
+					<property name="ij" value="" />
+				</include>
+			</if>
+		</trim>
+	</sql>
+
+
+	<select id="selectByConditions" parameterType="SearchParm"
+		resultType="PxActDetail">
+		<include refid="baseQuery">
+			<property name="field" value="actDetailFields" />
+		</include>
+		<include refid="page" />
+	</select>
+
+	<select id="selectByConditionsToReview"
+		parameterType="SearchParm" resultType="PxActReview">
+		<include refid="baseQuery">
+			<property name="field" value="actReviewFields" />
+		</include>
+		<include refid="page" />
+	</select>
+
+	<select id="selectByConditionsToBase" parameterType="SearchParm"
+		resultType="PxActBase">
+		<include refid="baseQuery">
+			<property name="field" value="actBaseFields" />
+		</include>
+		<include refid="page" />
+	</select>
+
+	<select id="selectTotalByConditions" parameterType="SearchParm"
+		resultType="int">
+		<choose>
+			<when test="type == 0">
+				<include refid="baseConditions">
+					<property name="table" value="px_act" />
+					<property name="joinTable" value="px_user" />
+					<property name="cf" value="uid" />
+					<property name="jf" value="id" />
+					<property name="field" value="count" />
+					<property name="ij" value="" />
+				</include>
+			</when>
+
+			<otherwise>
+				<include refid="baseConditions">
+					<property name="table" value="px_lctr" />
+					<property name="joinTable" value="px_user" />
+					<property name="cf" value="uid" />
+					<property name="jf" value="id" />
+					<property name="field" value="count" />
+					<property name="ij" value="" />
+				</include>
+			</otherwise>
+		</choose>
+	</select>
+
+	<!-- 查询推送的，大体结构跟上面一样，待优化 -->
+
+	<select id="selectRecList" parameterType="SearchParm"
+		resultType="PxActBase">
+
+		<include refid="baseConditions">
+			<property name="table" value="px_act" />
+			<property name="field" value="actBaseFields" />
+			<property name="type" value="0" />
+			<property name="joinTable" value="px_act_rec" />
+			<property name="cf" value="id" />
+			<property name="jf" value="aid" />
+			<property name="ij" value="" />
+		</include>
+		union
+		<include refid="baseConditions">
+			<property name="table" value="px_lctr" />
+			<property name="field" value="actBaseFields" />
+			<property name="type" value="1" />
+			<property name="joinTable" value="px_act_rec" />
+			<property name="cf" value="id" />
+			<property name="jf" value="aid" />
+			<property name="ij" value="" />
+		</include>
+		<include refid="page" />
+
+	</select>
+
+	<select id="selectRecDetailList" parameterType="SearchParm"
+		resultType="PxActReview">
+
+		<include refid="baseConditions">
+			<property name="table" value="px_act" />
+			<property name="field" value="actReviewFields" />
+			<property name="type" value="0" />
+			<property name="joinTable" value="px_act_rec" />
+			<property name="cf" value="id" />
+			<property name="jf" value="aid" />
+			<property name="ij"
+				value="INNER JOIN px_user ON px_act.uid = px_user.id" />
+		</include>
+		union
+		<include refid="baseConditions">
+			<property name="table" value="px_lctr" />
+			<property name="field" value="actReviewFields" />
+			<property name="type" value="1" />
+			<property name="joinTable" value="px_act_rec" />
+			<property name="cf" value="id" />
+			<property name="jf" value="aid" />
+			<property name="ij"
+				value="INNER JOIN px_user ON px_lctr.uid = px_user.id" />
+		</include>
+		<include refid="page" />
+
+	</select>
+
+	<select id="selectRecTotal" parameterType="SearchParm"
+		resultType="int">
+
+		<choose>
+			<when test="type == 0">
+				<include refid="baseConditions">
+					<property name="table" value="px_act" />
+					<property name="field" value="count" />
+					<property name="joinTable" value="px_act_rec" />
+					<property name="cf" value="id" />
+					<property name="jf" value="aid" />
+					<property name="ij" value="" />
+				</include>
+			</when>
+
+			<otherwise>
+				<include refid="baseConditions">
+					<property name="table" value="px_lctr" />
+					<property name="field" value="count" />
+					<property name="joinTable" value="px_act_rec" />
+					<property name="cf" value="id" />
+					<property name="jf" value="aid" />
+					<property name="ij" value="" />
+				</include>
+			</otherwise>
+		</choose>
+
+	</select>
+
+	<select id="selectActJoinTotal" parameterType="SearchParm"
+		resultType="int">
+		select count(id) from px_user_partake where aid=#{id}
+	</select>
+	
+	<select id="selectActJoinUser" parameterType="SearchParm"
+		resultType="PxUser">
+		select px_user.id, px_user.u, px_user.nickname, px_user.icon from px_user
+		inner join px_user_partake on px_user_partake.uid=px_user.id
+		where px_user_partake.aid=#{id}
+		<include refid="page" />
+	</select>
+	
+
+
+	<select id="selectActByUserJoin" parameterType="SearchParm"
+		resultType="PxActReview">
+
+		<include refid="baseConditions">
+			<property name="table" value="px_act" />
+			<property name="field" value="actReviewFields" />
+			<property name="type" value="0" />
+			<property name="joinTable" value="px_user_partake" />
+			<property name="cf" value="id" />
+			<property name="jf" value="aid" />
+			<property name="ij"
+				value="INNER JOIN px_user ON px_user_partake.uid = px_user.id" />
+		</include>
+		union
+		<include refid="baseConditions">
+			<property name="table" value="px_lctr" />
+			<property name="field" value="actReviewFields" />
+			<property name="type" value="1" />
+			<property name="joinTable" value="px_user_partake" />
+			<property name="cf" value="id" />
+			<property name="jf" value="aid" />
+			<property name="ij"
+				value="INNER JOIN px_user ON px_user_partake.uid = px_user.id" />
+		</include>
+		<include refid="page" />
+
+	</select>
+
+</mapper>

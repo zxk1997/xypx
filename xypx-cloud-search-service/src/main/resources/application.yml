@@ -1,7 +1,9 @@
 server:
   port: 9003
   
-
+logging:
+  level:
+    com.zxk1997.px.search.dao : debug
 spring:
   application:
     name: search-service
@@ -18,6 +20,7 @@ spring:
 #Mybatis配置
 mybatis: 
   mapperLocations : classpath:Mappers/*.xml
+  type-aliases-package: com.zxk1997.px.common.models
   
 
 eureka:

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxk1997.px.search.dao.PxTagActMapper">
+	<resultMap id="BaseResultMap" type="PxTag">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="name" jdbcType="VARCHAR" property="name" />
+		<result column="i" jdbcType="INTEGER" property="i" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, name, i
+	</sql>
+	<sql id="count">
+		count(id)
+	</sql>
+	<sql id="baseQuery">
+		select
+		<include refid="${fields}" />
+		from
+		<choose>
+			<when test='type == 0'>
+				px_tag_act
+			</when>
+			<otherwise>
+				px_tag_pers
+			</otherwise>
+		</choose>
+		<if test="str != null">
+			where name like CONCAT('%',#{str},'%' )
+		</if>
+	</sql>
+	<select id="selectTagsByConditions" resultMap="BaseResultMap"
+		parameterType="map">
+		<include refid="baseQuery">
+			<property name="fields" value="Base_Column_List" />
+		</include>
+		<if test="start != null">
+			LIMIT #{start},#{length}
+		</if>
+	</select>
+
+	<select id="selectTagTotalByConditions" resultType="int"
+		parameterType="map">
+		<include refid="baseQuery">
+			<property name="fields" value="count" />
+		</include>
+	</select>
+
+
+</mapper>
