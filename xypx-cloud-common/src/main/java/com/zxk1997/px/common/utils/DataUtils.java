@@ -37,7 +37,7 @@ public class DataUtils {
 	}
 	
 	public static boolean cookieTimeAvailable(String time,int minute) {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-hh:mm:ss");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
 		try {
 			Date d=sdf.parse(time);
 			int c = (int) ((new Date().getTime() - d.getTime()) / (1000*60));
@@ -49,7 +49,7 @@ public class DataUtils {
 	}
 	
 	public static String getCookieTime() {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-hh:mm:ss");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
 		return sdf.format(new Date());
 	}
 	

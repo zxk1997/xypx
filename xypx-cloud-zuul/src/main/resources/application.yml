@@ -8,6 +8,10 @@ spring:
   application:
     name: zuul-gateway
     
+feign:
+  hystrix:
+    enabled: true 
+    
 eureka:
   client:
     service-url:
@@ -15,7 +19,4 @@ eureka:
   instance:
     instance-id: zuul-gateway
     prefer-ip-address: true
-    
-
-  
     

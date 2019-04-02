@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.zxk1997.px.common.models.PxUser;
+import com.zxk1997.px.common.utils.DataUtils;
 import com.zxk1997.px.common.utils.RandomUtils;
 import com.zxk1997.px.common.utils.ResponseResult;
 import com.zxk1997.px.zuul.feign.IUserService;
@@ -31,13 +32,11 @@ public class LoginController {
 		ResponseResult result=user.login(u);
 		if(result.getStatus()==1) {
 			//用户信息验证通过
-			
 			String uuid=RandomUtils.getUUID();
-			if(user.writeLoginInfo(u, uuid).getStatus()==1) {
+			if(user.writeLoginInfo(DataUtils.responseResultToUser(result), uuid).getStatus()==1) {
 				//写入redis成功
 				Cookie session=new Cookie("s", uuid);
-				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd-hh:mm:ss");
-				Cookie time=new Cookie("t", format.format(new Date()));
+				Cookie time=new Cookie("t", DataUtils.getCookieTime());
 				resp.addCookie(session);
 				resp.addCookie(time);
 				result=ResponseResult.success();

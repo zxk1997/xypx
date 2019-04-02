@@ -26,7 +26,10 @@ public class ZuulApplication {
 	 * */
 	@Bean
 	public FeignInterceptor feignInterceptor() {
+		
 		return new FeignInterceptor();
 	}
+	
+	
 
 }

@@ -1,5 +1,7 @@
 package com.zxk1997.px.api.interceptors;
 
+import java.net.URLDecoder;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -15,8 +17,10 @@ public class UserAuth implements HandlerInterceptor {
 			throws Exception {
 		
 		if(request.getHeader("user")!=null) {
+			
 			Gson g=new Gson();
-			PxUser u=g.fromJson(request.getHeader("user"), PxUser.class);
+			String str=URLDecoder.decode(request.getHeader("user"), "utf-8");
+			PxUser u=g.fromJson(str, PxUser.class);
 			request.setAttribute("user", u);
 		}
 		

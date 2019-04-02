@@ -1,5 +1,8 @@
 package com.zxk1997.px.zuul.filters;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -85,7 +88,13 @@ public class MyFilter extends ZuulFilter {
 			
 			String u=getUser(s);
 			log.info("获取到的用户信息："+u);
-			if(u!=null)ctx.addZuulRequestHeader("user", u);
+			if(u!=null)
+				try {
+					ctx.addZuulRequestHeader("user", URLEncoder.encode(u, "utf-8"));
+				} catch (UnsupportedEncodingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
 		}
 		
