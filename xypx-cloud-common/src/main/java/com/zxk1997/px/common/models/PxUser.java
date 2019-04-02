@@ -1,5 +1,6 @@
 package com.zxk1997.px.common.models;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.validation.constraints.NotNull;
@@ -11,8 +12,13 @@ import com.zxk1997.px.common.interfaces.OpType;
 
 
 
-public class PxUser {
+public class PxUser implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@NotNull(groups=OpType.U.class)
 	@Null(groups=OpType.C.class)
     private String id;
@@ -20,7 +26,7 @@ public class PxUser {
 	@Length(min=6,max=12)
     private String u;
 
-	@Length(min=6,max=16)
+	@Length(min=32,max=32)
     private String p;
 
 	@Length(min=4,max=8,groups=OpType.C.class)

@@ -20,6 +20,7 @@ public class MyExceptionHandler {
 	
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseResult handleBindException(MethodArgumentNotValidException ex) {
+		log.error(ex.toString());
 		return ResponseResult.error(ErrorEnum.PARAM_ERR);
 	}
 	

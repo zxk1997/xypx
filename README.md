@@ -13,6 +13,10 @@
 
 前端源码仓库：[xypx-front](https://github.com/zxk1997/xypx-front)
 
+### 使用SpringCloud大致流程图
+
+![1554198331739](G:\Spring_Work\xypx-parent\assets\1554198331739.png)
+
 ------
 ```java
 由于历史原因(当年新版本开发到一半项目就卒了)蒲行前台和前台后端存在不少bug。(旧版本代码太乱不想放上来)

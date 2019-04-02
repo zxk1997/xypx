@@ -19,7 +19,7 @@
 			<dependency>
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-dependencies</artifactId>
-				<version>Finchley.RELEASE</version>
+				<version>Greenwich.RELEASE</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -66,5 +66,6 @@
 		<module>xypx-cloud-api</module>
 		<module>xypx-cloud-user-service</module>
 		<module>xypx-cloud-search-service</module>
+		<module>xypx-cloud-zuul</module>
 	</modules>
 </project>
