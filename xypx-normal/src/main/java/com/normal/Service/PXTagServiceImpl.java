@@ -1,7 +1,5 @@
 package com.normal.Service;
 
-
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,30 +19,30 @@ public class PXTagServiceImpl implements PXTagService {
 
 	@Resource
 	PXTagMapper tags;
-	
+
 	@Cacheable(value = "tags")
 	@Override
 	public Map<String, String> getTags(PXTagEnum type) {
-		List<Map<String, Object>> list=null;
-		if(type==PXTagEnum.ACT)list=tags.findAllActTag();
-		else list=tags.findAllPersTag();
-		Map<String, String> resultMap=new HashMap<>();
+		List<Map<String, Object>> list = null;
+		if (type == PXTagEnum.ACT)
+			list = tags.findAllActTag();
+		else
+			list = tags.findAllPersTag();
+		Map<String, String> resultMap = new HashMap<>();
 		for (Map<String, Object> map : list) {
-		      String region = null;
-		      String id = null;
-		      for (Entry<String, Object> entry : map.entrySet()) {
-		        if ("name".equals(entry.getKey())) {
-		          region = (String) entry.getValue();
-		        } else if ("id".equals(entry.getKey())) {
-		          id = String.valueOf( entry.getValue());
-		        }
-		      }
-		      resultMap.put(id, region);
-		    }
+			String region = null;
+			String id = null;
+			for (Entry<String, Object> entry : map.entrySet()) {
+				if ("name".equals(entry.getKey())) {
+					region = (String) entry.getValue();
+				} else if ("id".equals(entry.getKey())) {
+					id = String.valueOf(entry.getValue());
+				}
+			}
+			resultMap.put(id, region);
+		}
 		System.out.println("tags:从数据库中查询。。。");
-		    return resultMap;
+		return resultMap;
 	}
-
-
 
 }

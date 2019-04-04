@@ -7,6 +7,18 @@ public class PxActivity {
 	private PxAct act;
 	private PxLctr lctr;
 	private PxActType type;
+	
+	public PxActivity() {}
+	
+	public PxActivity(PxActType type,PxAct act) {
+		this.act=act;
+		this.type=type;
+	}
+	
+	public PxActivity(PxActType type,PxLctr lctr) {
+		this.lctr=lctr;
+		this.type=type;
+	}
 
 	public PxActType getType() {
 		return type;

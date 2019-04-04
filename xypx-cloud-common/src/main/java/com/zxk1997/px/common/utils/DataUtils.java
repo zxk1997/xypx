@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.google.gson.Gson;
 import com.zxk1997.px.common.models.PxUser;
+import com.zxk1997.px.common.models.SearchParm;
 
 
 
@@ -23,7 +24,19 @@ public class DataUtils {
 		return user;
 	}
 	
-	
+	public static Date ConvterToDate(String str) {
+		if(str!=null) {
+			SimpleDateFormat sdf =new SimpleDateFormat();
+			try {
+				return sdf.parse(str);
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		return null;
+	}
 	
 	public static String getCookie(HttpServletRequest req,String name) {
 		if(req!=null && req.getCookies()!=null) {
@@ -53,22 +66,26 @@ public class DataUtils {
 		return sdf.format(new Date());
 	}
 	
-//	public static HashMap<String, Object> simplePageHandler(HttpServletRequest req,HashMap<String, Object> map,int defaultSize){
-//		int page,size;
-//		
-//		try{
-//			if(req.getParameter("p")!=null)page=Integer.parseInt(req.getParameter("p").toString());
-//			else page=1;
-//		}catch(Exception ex){page=1;}
-//		
-//		try{
-//			if(req.getParameter("l")!=null)size=Integer.parseInt(req.getParameter("l").toString());
-//			else size=defaultSize;
-//		}catch(Exception ex){size=defaultSize;}
-//		size=size>20?20:size;
-//		
-//		map.put("start", (page-1)*size);
-//		map.put("length", size);
-//		return map;
-//	}
+	public static SearchParm simplePageHandler(HttpServletRequest req,SearchParm parm,int defaultSize){
+		int page,size;
+		
+		try{
+			if(req.getParameter("p")!=null)page=Integer.parseInt(req.getParameter("p").toString());
+			else page=1;
+		}catch(Exception ex){page=1;}
+		
+		try{
+			if(req.getParameter("l")!=null)size=Integer.parseInt(req.getParameter("l").toString());
+			else size=defaultSize;
+		}catch(Exception ex){size=defaultSize;}
+		size=size>20?20:size;
+		parm.setStart((page-1)*size);
+		parm.setLength(size);
+		return parm;
+	}
+	
+	public static boolean verifyCode(HttpServletRequest req,String v) {
+		
+		return false;
+	}
 }

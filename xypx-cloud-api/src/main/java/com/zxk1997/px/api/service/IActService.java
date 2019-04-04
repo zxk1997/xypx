@@ -49,6 +49,10 @@ public interface IActService {
 	@DeleteMapping("/act/partake/{id}")
 	Integer unJoin(@PathVariable("id") Integer id);
 	
+	
+	@DeleteMapping("/partake")
+	Integer unJoinByObj(PxUserPartake p);
+	
 	/**
 	 * 添加一个推送
 	 * */

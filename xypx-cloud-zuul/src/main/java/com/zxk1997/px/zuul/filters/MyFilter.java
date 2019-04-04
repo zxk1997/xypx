@@ -73,7 +73,6 @@ public class MyFilter extends ZuulFilter {
 		
 		if(s!=null) {//有登录信息
 			log.info("包含登录cookie:"+s);
-			//时间格式 yyyy-MM-dd-hh:mm:ss
 			String t=DataUtils.getCookie(req, "t");
 			if(t==null || !DataUtils.cookieTimeAvailable(t, 10)) {
 				//如果时间为空或者超过有效啥时间，则要刷新
@@ -97,8 +96,6 @@ public class MyFilter extends ZuulFilter {
 				}
 
 		}
-		
-		
 		
 		return null;
 	}

@@ -1,5 +1,6 @@
 package com.zxk1997.px.activity.controller;
 
+import java.util.Date;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
@@ -27,6 +28,8 @@ import com.zxk1997.px.common.models.PxActivity;
 import com.zxk1997.px.common.models.PxLctr;
 import com.zxk1997.px.common.models.PxTag;
 import com.zxk1997.px.common.models.PxUserPartake;
+import com.zxk1997.px.common.utils.DataUtils;
+import com.zxk1997.px.common.utils.RandomUtils;
 
 @RestController
 @RequestMapping("/act")
@@ -45,11 +48,15 @@ public class ActController {
 	public Integer add(@RequestBody PxActivity a) {
 		if(a!=null) {
 			if(a.getType()==PxActType.ACTIVITY) {
+				a.getAct().setId(RandomUtils.getUUID());
+				a.getAct().setTime(new Date());
 				Set<ConstraintViolation<PxAct>>set= v.validate(a.getAct());
 				if(set.size()>0) {
 					return -1;
 				}
 			}else {
+				a.getLctr().setId(RandomUtils.getUUID());
+				a.getLctr().setTime(new Date());
 				Set<ConstraintViolation<PxLctr>>set= v.validate(a.getLctr());
 				if(set.size()>0) {
 					return -1;
@@ -102,6 +109,11 @@ public class ActController {
 			return act.unJoinAct(p);
 		}
 		return -1;
+	}
+	
+	@DeleteMapping("/partake")
+	public Integer unJoinByObj(@RequestBody PxUserPartake p) {
+		return act.unJoinAct(p);
 	}
 	
 	@PostMapping("/rec/")

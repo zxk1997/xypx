@@ -6,6 +6,7 @@
 		${table}.id,
 		${table}.title as 'name',
 		${table}.summary,
+		${table}.status ,
 		${type} as 'type'
 	</sql>
 

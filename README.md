@@ -1,49 +1,39 @@
 # 原校园蒲行项目
 
-### 项目展示地址：[点我进入](http://120.78.83.14:8090)
+##### 项目展示地址：[点我进入](http://120.78.83.14:8090)    项目后台管理地址：[点我进入](http://120.78.83.14:8090/manage/)  (后台账号test 密码test 【只读权限】)
 
-### 项目后台管理地址：[点我进入](http://120.78.83.14:8090/manage/)
+#### 项目目录：
 
->### 后台账号test 密码test（这个用户只有只读权限）
+xypx-cloud：使用Spring Cloud编写的微服务版校园蒲行
 
-```shell
-所有子项目都部署在同一台服务器上，服务器是阿里云的学生机，不禁打，请大神手下留情。。
-用的是阿里云的ubuntu镜像，两个前端部署在nginx上，前台后端部署在tomcat上，SpringBoot项目则直接运行
-```
+xypx-manage： [校园蒲行后台](/xypx-manage)
 
-前端源码仓库：[xypx-front](https://github.com/zxk1997/xypx-front)
+xypx-normal：[原园蒲行项目(单体版)](/xypx-normal)
 
-### 使用SpringCloud大致流程图
+xypx-minifilesys：[超简单的图片服务器](/xypx-minifilesys)
 
-![1554198331739](G:\Spring_Work\xypx-parent\assets\1554198331739.png)
+前端页面源码仓库：[xypx-front](https://github.com/zxk1997/xypx-front)
+
+#### 项目已使用SpringCloud重写，大致流程图如下
+
+![1554363442775](./assets/1554363442775.png)
 
 ------
-```java
-由于历史原因(当年新版本开发到一半项目就卒了)蒲行前台和前台后端存在不少bug。(旧版本代码太乱不想放上来)
-整个后台都是近期为了能组成一个完整的项目而重写的，写的急而且是为了展示用，所以没考虑太多，应该会有不少bug。
-```
+#### 技术集成：
 
-## xypx-manage：校园蒲行后台
+- 使用Eureka做注册与发现中心
+- 使用Feign实现接口调用微服务
+- 使用Zuul做微服务的网关
+- 负载均衡Feign和Zuul自带有
 
-##### 技术集成：Spring Boot(Spring、Spring MVC、Mybatis、Druid)、Mysql
+#### 一些思考：
 
+登录信息放到redis中，这样所有服务都可以做到无状态，方便机器拓展。
 
+使用zuul来处理用户信息虽然方便下游，但这样会不会给网关带来额外的压力？
 
-## xypx-normal：原园蒲行项目(单体版)
+因为这项目的特性主要是查询，所以关于活动的查询都放到一个微服务中(SearchService)。
 
-##### 技术集成：Spring、Spring MVC、Mybatis、Spring Session（Redis）、Druid、Mysql
+部署时搜索微服务可以多部署几台，但目前所有微服务使用的是同一个数据库，一样会有性能问题。
 
-- 项目的session由Spring Sessioin持久化到Redis
-- 项目图片服务器原来是用七牛云，七牛云改版后需要太多手续，就用Spring Boot和MongoDB GridFs做了一个简陋的图片服务器
-- 前端页面由当时的创业伙伴编写，部署在服务器上的是第二个版本，只有基本功能，并未实现所有功能，且有不少BUG(比如搜索功能，后端功能经过测试是没问题的)
-- 为了部署在服务器，在原项目的基础上有小改动
-
-
-
-## xypx-minifilesys：简陋的图片服务器
-
-##### 技术集成：Spring Boot(Spring、Spring MVC)、MongoDB
-
-这项目主要是暂时代替图片服务器，只有上传图片和读取的功能
-
-
+下一步要做的，在各种查询前加一层本地缓存，以及尝试MySql的读写分离。

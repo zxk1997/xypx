@@ -1,7 +1,9 @@
-package com.zxk1997.px.common.models;
+package com.zxk1997.px.api.consumer.Models;
 
 
 import java.util.Date;
+
+import com.zxk1997.px.common.models.PxActReview;
 
 public class PXActInfoToSearch {
 	private String id;
@@ -14,6 +16,20 @@ public class PXActInfoToSearch {
 	private String nickname;
 	private Date time;
 	private int act_type;
+	
+	public static PXActInfoToSearch convert(PxActReview r) {
+		PXActInfoToSearch p=new PXActInfoToSearch();
+		p.setId(r.getId());
+		p.setPlacard(r.getPlacard());
+		p.setTitle(r.getName());
+		p.setSt(r.getStartTime());
+		p.setSummary(r.getSummary());
+		p.setIcon(r.getIcon());
+		p.setNickname(r.getHost());
+		p.setTime(r.getStartTime());
+		p.setAct_type(r.getType());
+		return p;
+	}
 	public String getId() {
 		return id;
 	}

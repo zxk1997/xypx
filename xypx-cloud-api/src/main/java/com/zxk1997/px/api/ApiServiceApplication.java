@@ -5,11 +5,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.zxk1997.px.api.interceptors.UserAuth;
 import com.zxk1997.px.common.Interceptors.FeignInterceptor;
+import com.zxk1997.px.common.Interceptors.MyExceptionHandler;
 import com.zxk1997.px.common.Interceptors.ServiceAuth;
 
 
@@ -17,11 +19,11 @@ import com.zxk1997.px.common.Interceptors.ServiceAuth;
 @SpringBootApplication
 @EnableEurekaClient
 @EnableFeignClients(basePackages="com.zxk1997.px.api.service")
+@ComponentScan({"com.zxk1997.px.api","com.zxk1997.px.api.consumer.Controller","com.zxk1997.px.api.consumer.Service"})
 public class ApiServiceApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(ApiServiceApplication.class, args);
-
 	}
 	
 	/**
@@ -38,6 +40,11 @@ public class ApiServiceApplication {
 	@Bean
 	public ServiceAuth auth() {
 		return new ServiceAuth();
+	}
+	
+	@Bean
+	public MyExceptionHandler exceptionHandler() {
+		return new MyExceptionHandler();
 	}
 	
 	@Bean

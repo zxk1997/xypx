@@ -103,7 +103,7 @@ public class UserController {
 	
 	@PostMapping("/")
 	public ResponseResult reg(@RequestBody @Validated({OpType.C.class,Default.class}) PxUser u) {
-		return user.login(u);
+		return user.reg(u);
 	}
 	
 	@PostMapping("/auth")

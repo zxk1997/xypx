@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.zxk1997.px.common.ServiceName;
@@ -15,12 +16,21 @@ import com.zxk1997.px.common.utils.ResponseResult;
 @FeignClient(ServiceName.user)
 public interface IUserService {
 	
+	
 	/**
 	 * 用户登录
 	 * */
 	@PostMapping("/user/login")
 	ResponseResult login( PxUser u) ;
 	
+	/***
+	 * 写入登录信息
+	 * @param u
+	 * @param id
+	 * @return
+	 */
+	@PostMapping("/user/login/status/{id}")
+	public ResponseResult writeLoginInfo(@RequestBody PxUser u,@PathVariable("id")String id);
 	
 	/***
 	 * 刷新登录状态
@@ -75,4 +85,22 @@ public interface IUserService {
 	 * */
 	@PostMapping("/user/auth")
 	ResponseResult addAuth(PxUser u,@RequestParam("img")String imgUrl);
+	
+	@PostMapping("/redis/")
+	ResponseResult redisAdd(@RequestParam("name") String name,@RequestParam("value")String value,@RequestParam("sec")int sec);
+	
+	@PostMapping("/redis/obj")
+	public ResponseResult redisAddObj(@RequestParam("name") String name,@RequestBody Object value,@RequestParam("sec")int  sec);
+	
+	@DeleteMapping("/redis/{name}")
+	public ResponseResult redisDel(@PathVariable("name") String name) ;
+	
+	@GetMapping("/redis/{name}")
+	public ResponseResult redisGet(@PathVariable("name") String name) ;
+
+	@GetMapping("/redis/obj/{name}")
+	public ResponseResult redisGetObj(@PathVariable("name") String name);
+	
+	@PutMapping("/redis/{name}")
+	public ResponseResult redisRef(@PathVariable("name") String name,@RequestParam("sec")int sec) ;
 }

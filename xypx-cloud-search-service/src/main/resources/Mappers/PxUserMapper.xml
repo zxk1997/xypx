@@ -50,6 +50,10 @@
 			<if test="uid != null">
 				and id=#{uid}
 			</if>
+			
+			<if test="host != null">
+				and u=#{host}
+			</if>
 		</trim>
 
 		<!-- 分页判断 -->

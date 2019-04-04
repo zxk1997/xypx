@@ -5,6 +5,13 @@ public class PxActBase {
 	private int type;
 	private String name;
 	private String summary;
+	private int status;
+	public int getStatus() {
+		return status;
+	}
+	public void setStatus(int status) {
+		this.status = status;
+	}
 	public String getSummary() {
 		return summary;
 	}

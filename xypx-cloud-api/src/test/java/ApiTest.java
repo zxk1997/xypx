@@ -87,21 +87,24 @@ public class ApiTest {
 //		ResponseResult r2=this.user.login(user);
 //		System.out.println(r2);
 //		
-		ResponseResult r=this.user.getLoginInfo("0301be3746364031a09544f696b890a5");
-
-		
-
-	
-		Gson g=new Gson();
-		String str=g.toJson(r.getInfo());
-		PxUser user=g.fromJson(str, PxUser.class);
-		
-		System.out.println(user);
+//		ResponseResult r=this.user.getLoginInfo("0301be3746364031a09544f696b890a5");
+//
+//		
+//
+//	
+//		Gson g=new Gson();
+//		String str=g.toJson(r.getInfo());
+//		PxUser user=g.fromJson(str, PxUser.class);
+//		
+//		System.out.println(user);
 		
 		
 //		ResponseResult r3=this.user.refLogin("0301be3746364031a09544f696b890a5");
 //		System.out.println(r3);
 		
+		System.out.println(user.redisAdd("zxk123", "aaa", 60));
+		
+		System.out.println(user.redisRef("zxk123",  120));
 		
 		
 	}

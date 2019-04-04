@@ -34,6 +34,12 @@ public class ResponseResult {
 	public void setInfo(Object info) {
 		this.info = info;
 	}
+	
+	public void setError(ErrorEnum e,String msg) {
+		this.setErrorCode(e.getErrCode());
+		this.setMsg(msg);
+		this.setStatus(0);
+	}
 
 	public static ResponseResult success(String msg,Object info) {
 		ResponseResult result=new ResponseResult();

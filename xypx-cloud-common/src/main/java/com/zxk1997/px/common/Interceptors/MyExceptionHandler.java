@@ -32,7 +32,7 @@ public class MyExceptionHandler {
 	
 	@ExceptionHandler(Exception.class)
 	public ResponseResult handleException(Exception ex) {
-		log.error(ex.toString());
+		log.error(ex.getClass().toString()+":"+ex.toString()+"---"+ex.getStackTrace().toString());
 		return ResponseResult.error(ErrorEnum.OP_FAIL);
 	}
 }

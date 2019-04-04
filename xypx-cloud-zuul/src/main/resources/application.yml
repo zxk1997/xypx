@@ -20,3 +20,10 @@ eureka:
     instance-id: zuul-gateway
     prefer-ip-address: true
     
+zuul:
+  sensitiveHeaders:  #去掉zuul的敏感头部，这样cookie才能读取写入
+  ignored-services: "*"
+  routes:
+    api:
+      path: /api/**
+      service-id: api-service
